@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>AURA · 서비스 선택</title>
+<style>
+  * { box-sizing: border-box; margin:0; padding:0; }
+  body { font-family:'Inter',-apple-system,sans-serif; }
+  html, body { height:100%; margin:0; }
+  body.kiosk-body { overflow:hidden; background:#1B1E27; display:flex; align-items:center; justify-content:center; }
+  .kiosk-viewport { width:100vw; height:100vh; display:flex; align-items:center; justify-content:center; }
+  .kiosk-viewport .frame { transform-origin:center center; border-radius:28px; overflow:hidden; box-shadow:0 30px 90px rgba(0,0,0,0.5); }
+  .frame { width:1080px; }
+  .zone { width:1080px; height:3240px; display:flex; flex-direction:column; align-items:center; background:linear-gradient(180deg, #FFFFFF 0%, #EBF5F7 100%); }
+  .header { width:100%; display:flex; flex-direction:column; gap:6px; padding:56px 56px 0; }
+  .header h1 { font-weight:700; font-size:28px; color:#1A1F2E; white-space:nowrap; }
+  .header p { font-weight:400; font-size:16px; color:#738099; white-space:nowrap; }
+  .status-block { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:24px; padding:8px 0 20px; }
+  .robot-face { width:340px; height:340px; border-radius:50%; padding:12px; background:linear-gradient(135deg,#01AAB4,#5786C3,#F59F19); }
+  .robot-face-inner { width:100%; height:100%; border-radius:50%; background:#12172E; display:flex; align-items:center; justify-content:center; gap:24px; }
+  .eye { width:54px; height:54px; border:7px solid #fff; border-radius:50%; }
+  .status-title { font-weight:700; font-size:40px; color:#5786C3; white-space:nowrap; }
+  .badge-row { display:flex; gap:8px; }
+  .badge { padding:6px 12px; border-radius:999px; font-size:13px; font-weight:500; background:#E5F5F5; color:#007378; }
+  .cta-section { width:100%; display:flex; flex-direction:column; align-items:center; gap:24px; padding:0 56px; }
+  .cta-card { width:100%; display:flex; align-items:center; gap:24px; padding:40px 36px; border-radius:30px; text-decoration:none; }
+  .cta-card.teal { background:linear-gradient(90deg,#01AAB4,#33C7CC); }
+  .cta-card.orange { background:linear-gradient(90deg,#F59F19,#FCBA4D); }
+  .cta-icon { width:84px; height:84px; border-radius:22px; background:rgba(255,255,255,0.2); display:flex; align-items:center; justify-content:center; font-size:40px; flex-shrink:0; }
+  .cta-text { flex:1; display:flex; flex-direction:column; gap:6px; }
+  .cta-text h3 { font-size:26px; font-weight:700; color:#fff; white-space:nowrap; }
+  .cta-text p { font-size:15px; color:rgba(255,255,255,0.85); white-space:nowrap; }
+  .help-row { width:100%; display:flex; gap:16px; padding:0 56px 24px; }
+  .ghost { flex:1; padding:16px 22px; border-radius:999px; background:#fff; border:1.5px solid #D1D9E5; text-align:center; font-size:14px; font-weight:600; color:#596680; text-decoration:none; }
+  .ghost.danger { border-color:#F08C8C; color:#D94040; }
+</style>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/responsive.css') }}">
+</head>
+<body class="kiosk-body"
+ data-timeout-seconds="{{ inactivity_timeout_seconds }}"
+ data-timeout-url="{{ url_for('passenger.inactivity_timeout') }}"
+ data-system-state-url="{{ url_for('api.system_state') }}">
+<div class="kiosk-viewport">
+<div class="frame">
+  <div class="zone" style="gap:333px;">
+    <div class="header">
+      <h1>어떤 도움이 필요하신가요?</h1>
+      <p>원하시는 서비스를 선택해주세요</p>
+    </div>
+    <div class="status-block">
+      <div class="robot-face"><div class="robot-face-inner"><div class="eye"></div><div class="eye"></div></div></div>
+      <div class="status-title">무엇을 도와드릴까요?</div>
+      <div class="badge-row"><div class="badge">🔋 92%</div><div class="badge">🟢 온라인</div></div>
+    </div>
+    <div class="cta-section">
+      <!-- topic: /aura/service_request/guide (service_type: GUIDE) -->
+      <a href="{{ url_for('passenger.destination_select') }}" class="cta-card teal">
+        <div class="cta-icon">🧭</div>
+        <div class="cta-text"><h3>길 안내 요청</h3><p>목적지까지 로봇이 안내해 드립니다</p></div>
+      </a>
+      <!-- topic: /aura/service_request/luggage_assist (service_type: LUGGAGE_ASSIST) -->
+      {% if luggage_enabled %}
+      <a href="{{ url_for('passenger.luggage_loading') }}" class="cta-card orange">
+        <div class="cta-icon">🧳</div>
+        <div class="cta-text"><h3>짐 보조 요청 (동행)</h3><p>로봇이 짐을 들고 승객과 함께 이동합니다</p></div>
+      </a>
+      {% else %}
+      <div class="cta-card orange" style="opacity:0.45;">
+        <div class="cta-icon">🧳</div>
+        <div class="cta-text"><h3>짐 보조 요청 (동행)</h3><p>현재 로봇에서는 사용할 수 없습니다</p></div>
+      </div>
+      {% endif %}
+    </div>
+    <div class="help-row">
+      <div class="ghost">❔ 도움 요청</div>
+      <div class="ghost danger">🚨 관리자 호출</div>
+    </div>
+  </div>
+</div>
+</div>
+<script>
+  function fitKiosk() {
+    const el = document.querySelector('.frame');
+    const scale = Math.min(window.innerWidth / 1080, window.innerHeight / 3240) * 0.94;
+    el.style.transform = `scale(${scale})`;
+  }
+  window.addEventListener('resize', fitKiosk);
+  fitKiosk();
+</script>
+<script src="{{ url_for('static', filename='js/inactivity.js') }}"></script>
+<script src="{{ url_for('static', filename='js/emergency_watch.js') }}"></script>
+{% include '_debug_home_button.html' %}
+</body>
+</html>

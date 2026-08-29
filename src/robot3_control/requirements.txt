@@ -1,0 +1,9 @@
+# robot3_control 전용 pip 의존성 (ROS 메시지 패키지는 apt 제공)
+numpy<2.0
+opencv-python>=4.8
+ultralytics>=8.3.0
+torch>=2.0
+torchvision>=0.15
+packaging>=21.0
+# 후방 카메라 단안 깊이 추정용 UniDepthV2:
+#   pip install -e ../../third_party/UniDepth

@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>robot3_control</name>
+  <version>0.1.0</version>
+  <description>robot3(가이드/러기지 어시스트 로봇) 로컬 자율 스택: 후방/전방 인원 추적, 가이드/팔로잉 모션, 순찰, 미션 FSM. 중앙과는 부분 연결.</description>
+  <maintainer email="team@example.com">robot_control_team</maintainer>
+  <license>Apache-2.0</license>
+
+  <depend>rclpy</depend>
+  <depend>fleet_interfaces</depend>
+  <depend>std_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>nav_msgs</depend>
+  <depend>nav2_msgs</depend>
+  <depend>sensor_msgs</depend>
+  <depend>action_msgs</depend>
+  <depend>tf2_ros</depend>
+  <depend>message_filters</depend>
+
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+</package>

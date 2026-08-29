@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>AURA · 응급 상황</title>
+<style>
+  * { box-sizing: border-box; margin:0; padding:0; }
+  body { font-family:'Inter',-apple-system,sans-serif; }
+  html, body { height:100%; margin:0; }
+  body.kiosk-body { overflow:hidden; background:#1B1E27; display:flex; align-items:center; justify-content:center; }
+  .kiosk-viewport { width:100vw; height:100vh; display:flex; align-items:center; justify-content:center; }
+  .kiosk-viewport .frame { transform-origin:center center; border-radius:28px; overflow:hidden; box-shadow:0 30px 90px rgba(0,0,0,0.5); }
+  .frame { width:1080px; }
+  .zone { width:1080px; height:3240px; display:flex; flex-direction:column; align-items:center; background:linear-gradient(180deg, #FAE5E5 0%, #FCF5F5 100%); }
+  @keyframes pulseWarn { 0%,100% { opacity:1; } 50% { opacity:0.55; } }
+  @keyframes pulseRing { 0% { transform:scale(1); opacity:0.9; } 100% { transform:scale(1.12); opacity:0.4; } }
+  .alert-banner { width:100%; display:flex; align-items:center; justify-content:center; gap:12px; padding:24px 40px; background:#D94040; animation: pulseWarn 1.6s ease-in-out infinite; }
+  .alert-banner .emoji { font-size:30px; }
+  .alert-banner .txt { font-size:26px; font-weight:700; color:#fff; white-space:nowrap; }
+  .warning-center { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:24px; }
+  .icon-stage { position:relative; width:340px; height:340px; }
+  .ring { position:absolute; border-radius:50%; background:#D94040; }
+  .ring.outer { width:340px; height:340px; left:0; top:0; opacity:0.10; animation: pulseRing 2.2s ease-out infinite; }
+  .ring.mid { width:270px; height:270px; left:35px; top:35px; opacity:0.16; animation: pulseRing 2.2s ease-out infinite 0.4s; }
+  .ring.core { width:200px; height:200px; left:70px; top:70px; opacity:1; display:flex; align-items:center; justify-content:center; }
+  .ring.core .bang { font-size:110px; font-weight:700; color:#fff; }
+  .warning-center .sub { font-size:18px; color:#8C3333; text-align:center; white-space:nowrap; }
+  .action-buttons { width:100%; display:flex; flex-direction:column; align-items:center; gap:20px; padding:0 56px; }
+  .action-card { width:100%; display:flex; align-items:center; gap:20px; padding:30px 32px; border-radius:26px; text-decoration:none; }
+  .action-card.primary { background:linear-gradient(90deg,#D93333,#ED594D); }
+  .action-card.secondary { background:#fff; border:1.5px solid #D98C8C; }
+  .action-icon { width:68px; height:68px; border-radius:18px; display:flex; align-items:center; justify-content:center; font-size:32px; flex-shrink:0; }
+  .action-card.primary .action-icon { background:rgba(255,255,255,0.2); }
+  .action-card.secondary .action-icon { background:#FAE5E5; }
+  .action-text { flex:1; display:flex; flex-direction:column; gap:4px; }
+  .action-text h3 { font-size:22px; font-weight:700; white-space:nowrap; }
+  .action-card.primary .action-text h3 { color:#fff; }
+  .action-card.secondary .action-text h3 { color:#B22626; }
+  .action-text p { font-size:14px; white-space:nowrap; }
+  .action-card.primary .action-text p { color:rgba(255,255,255,0.85); }
+  .action-card.secondary .action-text p { color:#995959; }
+  .end-row { width:100%; display:flex; padding:0 56px 40px; }
+  .end-btn { flex:1; display:flex; align-items:center; justify-content:center; padding:16px 0; border-radius:999px; background:rgba(255,255,255,0.6); border:1.5px solid #BF9999; color:#804D4D; font-size:14px; font-weight:600; text-decoration:none; }
+</style>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/responsive.css') }}">
+</head>
+<body class="kiosk-body" data-system-state-url="{{ url_for('api.system_state') }}">
+<div class="kiosk-viewport">
+<div class="frame">
+  <div class="zone" style="gap:300px;">
+    <div class="alert-banner">
+      <span class="emoji">🚨</span><span class="txt">응급 상황이 감지되었습니다</span>
+    </div>
+    <div class="warning-center">
+      <div class="icon-stage">
+        <div class="ring outer"></div>
+        <div class="ring mid"></div>
+        <div class="ring core"><span class="bang">!</span></div>
+      </div>
+      <div class="sub">주변 관리자에게 알림이 전송되었습니다</div>
+    </div>
+    <div class="action-buttons">
+      <!-- topic: /aura/emergency/aed_dispense -->
+      <a href="#" class="action-card primary">
+        <div class="action-icon">🔴</div>
+        <div class="action-text"><h3>AED 꺼내기</h3><p>로봇 적재함에서 자동제세동기를 꺼내주세요</p></div>
+      </a>
+      <!-- topic: /aura/emergency/show_guideline  guide: CPR -->
+      <a href="#" class="action-card secondary">
+        <div class="action-icon">📋</div>
+        <div class="action-text"><h3>응급 가이드라인 확인하기</h3><p>CPR 및 응급처치 절차를 안내해 드립니다</p></div>
+      </a>
+      <!-- topic: /aura/emergency/show_guideline  guide: CALL_119 -->
+      <a href="#" class="action-card secondary">
+        <div class="action-icon">📞</div>
+        <div class="action-text"><h3>119 신고 안내</h3><p>신고 방법과 상황 전달 요령을 안내합니다</p></div>
+      </a>
+    </div>
+    <div class="end-row">
+      <!-- topic: /aura/emergency/end  (admin-only) -->
+      <a href="{{ url_for('passenger.emergency_end') }}" class="end-btn">✅ 상황 종료 (관리자 전용)</a>
+    </div>
+  </div>
+</div>
+</div>
+<script>
+  function fitKiosk() {
+    const el = document.querySelector('.frame');
+    const scale = Math.min(window.innerWidth / 1080, window.innerHeight / 3240) * 0.94;
+    el.style.transform = `scale(${scale})`;
+  }
+  window.addEventListener('resize', fitKiosk);
+  fitKiosk();
+</script>
+<script src="{{ url_for('static', filename='js/emergency_watch.js') }}"></script>
+{% include '_debug_home_button.html' %}
+</body>
+</html>

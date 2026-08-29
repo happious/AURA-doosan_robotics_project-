@@ -1,0 +1,4 @@
+# 관리자(관제) UI
+# rclpy / sensor_msgs / std_msgs 는 ROS2 Humble(apt)에서 제공됩니다.
+# ROS 없이 DB 전용 모드로도 실행 가능합니다.
+Flask>=3.0,<4.0

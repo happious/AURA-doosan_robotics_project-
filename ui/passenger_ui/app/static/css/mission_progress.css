@@ -1,0 +1,12 @@
+.progress-zone { gap: 413px; }
+.header { width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 48px 56px 0; }
+.mission-badge { display: flex; align-items: center; padding: 10px 18px; border-radius: 999px; background: #01AAB4; color: #fff; font-size: 15px; font-weight: 600; white-space: nowrap; }
+.mission-badge.orange { background: #F59F19; }
+.center-content { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 28px; }
+.status-title { font-size: 28px; font-weight: 700; color: #1A1F2E; text-align: center; white-space: nowrap; }
+.status-sub { font-size: 16px; color: #738099; text-align: center; white-space: nowrap; }
+.progress-track { width: 480px; height: 12px; border-radius: 999px; background: #E0E5F2; overflow: hidden; }
+.progress-fill { width: 62%; height: 100%; border-radius: 999px; background: linear-gradient(90deg,#01AAB4,#5786C3); }
+.end-block { width: 100%; display: flex; flex-direction: column; align-items: center; padding: 0 56px 40px; }
+.end-btn { width: 100%; display: flex; align-items: center; justify-content: center; padding: 24px 0; border-radius: 999px; background: #fff; border: 1.5px solid #D1D9E5; color: #596680; font-size: 40px; font-weight: 700; white-space: nowrap; cursor: pointer; }
+.footer { width: 100%; display: flex; gap: 16px; padding: 0 56px 24px; }

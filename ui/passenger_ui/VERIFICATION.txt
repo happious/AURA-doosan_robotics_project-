@@ -1,0 +1,27 @@
+V19 검증 결과
+
+[통과]
+- Python compileall 문법 검사
+- alignment_watch.js Node.js 구문 검사
+- luggage_tracking_watch.js Node.js 구문 검사
+- GUIDE 상태 머신 테스트
+  · PREALIGN -> TURNING_TO_REAR
+  · 회전 중 tracking_web=0/1/2 무시
+  · 회전 완료 후 WAITING
+  · WAITING + 1 -> DETECTED
+  · DETECTED -> service_request -> 05_Mission_Progress
+  · WAITING + 0/2 -> LOST
+  · LOST -> /turn_around 1회 -> RETURNING_TO_FRONT
+  · 전면 복귀 중 tracking_web 무시
+  · 전면 복귀 완료 -> PREALIGN(retry)
+  · retry 화면에 정렬 완료 버튼 form 존재
+- PREALIGN에서도 alignment_watch.js 항상 로드
+- alignment_watch.js 캐시 방지 v=19 적용
+- 진행 중 GET / 요청이 alignment 상태를 IDLE로 초기화하지 않음
+
+[실제 장비 확인]
+- AMR3 실제 180도 회전에 걸리는 시간 측정
+- 필요 시 아래 값 조정
+  export AURA_GUIDE_TURN_AROUND_SECONDS=4.0
+- 실제 /tracking_web=1 이후 목적지 주행 시작 확인
+- 실제 /tracking_web=0/2 이후 전면 복귀 확인

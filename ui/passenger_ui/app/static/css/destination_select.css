@@ -1,0 +1,20 @@
+.destination-zone { gap: 347px; }
+.header { width: 100%; display: flex; gap: 18px; align-items: center; padding: 48px 56px 0; }
+.title-block { display: flex; flex-direction: column; gap: 4px; }
+.title-block h1 { font-size: 26px; font-weight: 700; color: #1A1F2E; white-space: nowrap; }
+.title-block p { font-size: 15px; color: #738099; white-space: nowrap; }
+.grid { display: grid; grid-template-columns: 456px 456px; gap: 20px; padding: 0 56px; }
+.dest-card { width: 456px; height: 320px; border-radius: 28px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; text-decoration: none; cursor: pointer; }
+.dest-card.active.teal { background: linear-gradient(90deg, #01AAB4, #33C7CC); }
+.dest-card.active.orange { background: linear-gradient(90deg, #F59F19, #FCBA4D); }
+.dest-card.disabled { background: #EDF0F5; cursor: default; }
+.dest-icon { width: 96px; height: 96px; border-radius: 24px; display: flex; align-items: center; justify-content: center; font-size: 44px; }
+.dest-card.active .dest-icon { background: rgba(255,255,255,.22); }
+.dest-card.disabled .dest-icon { background: rgba(255,255,255,.7); }
+.dest-card h3 { font-size: 22px; font-weight: 700; }
+.dest-card.active h3 { color: #fff; }
+.dest-card.disabled h3 { color: #8C94A3; }
+.dest-tag { padding: 6px 14px; border-radius: 999px; font-size: 13px; }
+.dest-card.active .dest-tag { background: rgba(255,255,255,.22); color: #fff; }
+.dest-card.disabled .dest-tag { background: #D9DBE3; color: #8C94A3; }
+.mic-btn { width: 160px; height: 160px; border-radius: 50%; background: #fff; border: 1.5px solid #D9E0ED; display: flex; align-items: center; justify-content: center; }

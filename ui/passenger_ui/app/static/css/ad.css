@@ -1,0 +1,25 @@
+.ad-frame {
+  position: relative;
+  width: 1080px;
+  height: 3240px;
+  overflow: hidden;
+  display: block;
+  text-decoration: none;
+  cursor: pointer;
+  background: linear-gradient(108deg, #BFE58C 14%, #33B8AD 46%, #26739E 86%);
+}
+@keyframes drift1 { 0%,100% { transform: translate(0,0) rotate(-8deg) scale(1); } 50% { transform: translate(30px,-40px) rotate(-4deg) scale(1.05); } }
+@keyframes drift2 { 0%,100% { transform: translate(0,0) rotate(6deg) scale(1); } 50% { transform: translate(-25px,35px) rotate(10deg) scale(1.04); } }
+@keyframes drift3 { 0%,100% { transform: translate(0,0) rotate(4deg) scale(1); } 50% { transform: translate(20px,25px) rotate(0deg) scale(1.06); } }
+@keyframes hintPulse { 0%,100% { opacity:.5; } 50% { opacity:1; } }
+.blob { position:absolute; border-radius:50%; filter:blur(90px); }
+.blob.b1 { width:900px; height:1300px; left:-180px; top:-100px; background:#fff; opacity:.10; }
+.blob.b2 { width:760px; height:1100px; left:280px; top:340px; background:#33C7CC; opacity:.55; animation:drift1 14s ease-in-out infinite; }
+.blob.b3 { width:620px; height:900px; left:120px; top:950px; background:#2FA89E; opacity:.50; animation:drift2 17s ease-in-out infinite; }
+.blob.b4 { width:560px; height:780px; left:420px; top:1550px; background:#8DDB6C; opacity:.40; animation:drift3 15s ease-in-out infinite; }
+.blob.b5 { width:480px; height:620px; left:60px; top:850px; background:#E5FADC; opacity:.30; filter:blur(70px); }
+.blob.b6 { width:520px; height:500px; left:300px; top:2150px; background:#0F5C66; opacity:.45; animation:drift1 19s ease-in-out infinite; }
+.blob.b7 { width:400px; height:460px; left:150px; top:2650px; background:#33C7CC; opacity:.35; animation:drift2 13s ease-in-out infinite; }
+.wordmark { position:absolute; left:50%; top:56px; transform:translateX(-50%); font-weight:700; font-size:22px; letter-spacing:4px; color:rgba(255,255,255,.7); white-space:nowrap; }
+.touch-hint { position:absolute; left:50%; bottom:100px; transform:translateX(-50%); padding:14px 26px; border-radius:999px; background:rgba(255,255,255,.18); font-size:16px; font-weight:500; color:rgba(255,255,255,.9); white-space:nowrap; animation:hintPulse 2.4s ease-in-out infinite; }
+.ad-frame { appearance:none; -webkit-appearance:none; font-family:inherit; }

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>AURA · 짐 싣기 안내</title>
+<style>
+  * { box-sizing: border-box; margin:0; padding:0; }
+  body { font-family:'Inter',-apple-system,sans-serif; }
+  html, body { height:100%; margin:0; }
+  body.kiosk-body { overflow:hidden; background:#1B1E27; display:flex; align-items:center; justify-content:center; }
+  .kiosk-viewport { width:100vw; height:100vh; display:flex; align-items:center; justify-content:center; }
+  .kiosk-viewport .frame { transform-origin:center center; border-radius:28px; overflow:hidden; box-shadow:0 30px 90px rgba(0,0,0,0.5); }
+  .frame { width:1080px; }
+  .zone { width:1080px; height:3240px; display:flex; flex-direction:column; align-items:center; background:linear-gradient(180deg, #FFFFFF 0%, #EBF5F7 100%); }
+  .header { width:100%; display:flex; gap:18px; align-items:center; padding:48px 56px 16px; }
+  .icon-btn { width:50px; height:50px; border-radius:50%; background:#fff; border:1.5px solid #D9E0ED; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:22px; color:#262E40; text-decoration:none; flex-shrink:0; }
+  .title-block { display:flex; flex-direction:column; gap:4px; }
+  .title-block h1 { font-size:26px; font-weight:700; color:#1A1F2E; white-space:nowrap; }
+  .title-block p { font-size:15px; color:#738099; white-space:nowrap; }
+  .illo-block { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:28px; padding:40px 0; }
+  .illo-circle { width:260px; height:260px; border-radius:50%; background:linear-gradient(90deg,#F59F19,#FCBA4D); display:flex; align-items:center; justify-content:center; font-size:110px; }
+  .illo-block .caption { font-size:40px; font-weight:700; color:#5786C3; text-align:center; white-space:nowrap; }
+  .note-row { display:flex; gap:10px; }
+  .note-badge { padding:8px 16px; border-radius:999px; background:#F2F5FA; color:#667085; font-size:14px; font-weight:500; }
+  .footer { width:100%; display:flex; flex-direction:column; gap:16px; padding:0 56px 24px; }
+  .primary-btn { width:100%; display:flex; align-items:center; justify-content:center; padding:22px 0; border:none; border-radius:999px; background:linear-gradient(90deg,#F59F19,#FCBA4D); color:#fff; font-size:64px; font-weight:700; text-decoration:none; white-space:nowrap; cursor:pointer; }
+  .primary-btn:disabled { opacity:0.72; cursor:wait; }
+  .full-form { width:100%; margin:0; }
+  .tracking-note { padding:18px 24px; border-radius:18px; background:#FFF4DE; border:1.5px solid #F5C268; color:#8A5A00; font-size:24px; font-weight:700; text-align:center; }
+  .tracking-note.success { background:#E9F9EF; border-color:#68C58A; color:#1F7A43; }
+  .primary-btn.success { background:linear-gradient(90deg,#1FA765,#55C98B); opacity:1; }
+  .help-row { display:flex; gap:16px; }
+  .ghost { flex:1; padding:16px 22px; border-radius:999px; background:#fff; border:1.5px solid #D1D9E5; text-align:center; font-size:14px; font-weight:600; color:#596680; text-decoration:none; }
+  .ghost.danger { border-color:#F08C8C; color:#D94040; }
+</style>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/responsive.css') }}">
+</head>
+<body class="kiosk-body"
+ data-timeout-seconds="{{ inactivity_timeout_seconds }}"
+ data-timeout-url="{{ url_for('passenger.inactivity_timeout') }}"
+ data-system-state-url="{{ url_for('api.system_state') }}"
+ data-luggage-tracking="{{ 'true' if waiting_tracking else 'false' }}"
+ data-alignment-state-url="{{ url_for('api.alignment_state') }}"
+ data-confirm-url="{{ url_for('passenger.confirm_alignment') }}"
+ data-success-delay-ms="2000">
+<div class="kiosk-viewport">
+<div class="frame">
+  <div class="zone" style="gap:604px; padding-bottom:1492px;">
+    <div class="header">
+      <a href="{{ url_for('passenger.service_selection') }}" class="icon-btn">←</a>
+      <div class="title-block">
+        <h1 id="luggageTitle">{% if waiting_tracking %}승객 인식 중입니다{% else %}짐을 실어주세요{% endif %}</h1>
+        <p id="luggageSubtitle">{% if waiting_tracking %}로봇 앞에 서서 인식을 기다려주세요{% else %}짐을 실은 뒤 로봇 앞에 서주세요{% endif %}</p>
+      </div>
+    </div>
+    <div class="illo-block">
+      <div class="illo-circle">🧳</div>
+      <div id="luggageCaption" class="caption">{% if waiting_tracking %}로봇 앞에 서주세요{% else %}짐을 싣고 로봇 앞에 서주세요{% endif %}</div>
+      <div class="note-row"><div class="note-badge">최대 20kg</div><div class="note-badge">캐리어 1개</div></div>
+      {% if waiting_tracking %}<div id="trackingNote" class="tracking-note">승객 인식 대기 중</div>{% endif %}
+    </div>
+    <div class="footer">
+      <!-- topic: /aura/luggage_load_confirm, /carrying -->
+      {% if waiting_tracking %}
+      <button id="luggageWaitBtn" class="primary-btn" type="button" disabled>승객 인식 중</button>
+      {% else %}
+      <form method="POST" action="{{ url_for('passenger.prepare_luggage') }}" class="full-form">
+        <button type="submit" class="primary-btn">짐 싣기 완료</button>
+      </form>
+      {% endif %}
+      <div class="help-row">
+        <div class="ghost">❔ 도움 요청</div>
+        <div class="ghost danger">🚨 관리자 호출</div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+<script>
+  function fitKiosk() {
+    const el = document.querySelector('.frame');
+    const scale = Math.min(window.innerWidth / 1080, window.innerHeight / 3240) * 0.94;
+    el.style.transform = `scale(${scale})`;
+  }
+  window.addEventListener('resize', fitKiosk);
+  fitKiosk();
+</script>
+{% if not waiting_tracking %}<script src="{{ url_for('static', filename='js/inactivity.js') }}"></script>{% endif %}
+{% if waiting_tracking %}<script src="{{ url_for('static', filename='js/luggage_tracking_watch.js') }}"></script>{% endif %}
+<script src="{{ url_for('static', filename='js/emergency_watch.js') }}"></script>
+{% include '_debug_home_button.html' %}
+</body>
+</html>

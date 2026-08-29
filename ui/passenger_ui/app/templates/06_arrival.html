@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>AURA · 도착</title>
+<style>
+  * { box-sizing: border-box; margin:0; padding:0; }
+  body { font-family:'Inter',-apple-system,sans-serif; }
+  html, body { height:100%; margin:0; }
+  body.kiosk-body { overflow:hidden; background:#1B1E27; display:flex; align-items:center; justify-content:center; }
+  .kiosk-viewport { width:100vw; height:100vh; display:flex; align-items:center; justify-content:center; }
+  .kiosk-viewport .frame { transform-origin:center center; border-radius:28px; overflow:hidden; box-shadow:0 30px 90px rgba(0,0,0,0.5); }
+  .frame { width:1080px; }
+  .zone { width:1080px; height:3240px; display:flex; flex-direction:column; align-items:center; background:linear-gradient(180deg, #FFFFFF 0%, #EBF5F7 100%); }
+  .spacer { width:100%; height:364px; flex-shrink:0; }
+  .status-block { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:24px; padding:8px 0 20px; }
+  .robot-face { width:340px; height:340px; border-radius:50%; padding:12px; background:linear-gradient(135deg,#01AAB4,#5786C3,#F59F19); }
+  .robot-face-inner { width:100%; height:100%; border-radius:50%; background:#12172E; display:flex; align-items:center; justify-content:center; gap:24px; }
+  .eye { width:54px; height:54px; border:7px solid #fff; border-radius:50%; }
+  .status-block .small-title { font-size:24px; font-weight:700; color:#1A1F2E; white-space:nowrap; }
+  .badge-row { display:flex; gap:8px; }
+  .badge { padding:6px 12px; border-radius:999px; font-size:13px; font-weight:500; background:#E5F5F5; color:#007378; }
+  .success-block { width:538px; height:489px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:20px; }
+  .check-circle { width:220px; height:220px; border-radius:50%; background:linear-gradient(90deg,#01AAB4,#33C7CC); display:flex; align-items:center; justify-content:center; font-size:96px; font-weight:700; color:#fff; }
+  .success-block h1 { font-size:40px; font-weight:700; color:#1A1F2E; text-align:center; white-space:nowrap; }
+  .success-block p { font-size:24px; color:#01AAB4; text-align:center; white-space:nowrap; }
+  .footer { width:100%; display:flex; flex-direction:column; align-items:center; gap:18px; padding:0 56px 40px; }
+  .primary-btn { width:100%; display:flex; align-items:center; justify-content:center; padding:26px 32px; border-radius:999px; background:linear-gradient(90deg,#01AAB4,#33C7CC); color:#fff; font-size:40px; font-weight:700; text-decoration:none; white-space:nowrap; }
+  .secondary-btn { width:100%; display:flex; align-items:center; justify-content:center; padding:24px 0; border-radius:999px; background:#fff; border:1.5px solid #D1D9E5; color:#596680; font-size:32px; font-weight:700; text-decoration:none; white-space:nowrap; }
+</style>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/responsive.css') }}">
+</head>
+<body class="kiosk-body" data-system-state-url="{{ url_for('api.system_state') }}">
+<div class="kiosk-viewport">
+<div class="frame">
+  <div class="zone" style="gap:161px; padding-bottom:1506px;">
+    <div class="spacer"></div>
+    <div class="status-block">
+      <div class="robot-face"><div class="robot-face-inner"><div class="eye"></div><div class="eye"></div></div></div>
+      <div class="small-title">목적지에 도착했습니다</div>
+      <div class="badge-row"><div class="badge">🔋 92%</div><div class="badge">🟢 온라인</div></div>
+    </div>
+    <div class="success-block">
+      <div class="check-circle">✓</div>
+      <h1>목적지에 도착했습니다</h1>
+      <p>이용해주셔서 감사합니다</p>
+    </div>
+    <div class="footer">
+      <!-- topic: /aura/service_request (re-enter selection flow) -->
+      <a href="{{ url_for('passenger.additional_service') }}" class="primary-btn">추가 서비스 이용하기</a>
+      <!-- topic: /aura/service_end  next_mode: RETURNING -->
+      <a href="{{ url_for('passenger.service_end', reason='USER_REQUEST') }}" class="secondary-btn">안내 종료</a>
+    </div>
+  </div>
+</div>
+</div>
+<script>
+  function fitKiosk() {
+    const el = document.querySelector('.frame');
+    const scale = Math.min(window.innerWidth / 1080, window.innerHeight / 3240) * 0.94;
+    el.style.transform = `scale(${scale})`;
+  }
+  window.addEventListener('resize', fitKiosk);
+  fitKiosk();
+</script>
+<script src="{{ url_for('static', filename='js/emergency_watch.js') }}"></script>
+{% include '_debug_home_button.html' %}
+</body>
+</html>

@@ -1,0 +1,129 @@
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 100%; height: 100%; }
+body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+button, input, select { font: inherit; }
+button { border: 0; }
+
+body.kiosk-body {
+  overflow: hidden;
+  background: #1B1E27;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.kiosk-viewport {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.frame {
+  width: 1080px;
+  transform-origin: center center;
+  border-radius: 28px;
+  overflow: hidden;
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.5);
+}
+
+.zone {
+  width: 1080px;
+  height: 3240px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: linear-gradient(180deg, #FFFFFF 0%, #EBF5F7 100%);
+}
+
+.robot-face {
+  width: 340px;
+  height: 340px;
+  border-radius: 50%;
+  padding: 12px;
+  background: linear-gradient(135deg, #01AAB4, #5786C3, #F59F19);
+}
+
+.robot-face-inner {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: #12172E;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+}
+
+.eye {
+  width: 54px;
+  height: 54px;
+  border: 7px solid #fff;
+  border-radius: 50%;
+}
+
+.badge-row { display: flex; gap: 8px; }
+.badge {
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 500;
+  background: #E5F5F5;
+  color: #007378;
+}
+
+.icon-btn {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: #fff;
+  border: 1.5px solid #D9E0ED;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 22px;
+  color: #262E40;
+  text-decoration: none;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.help-row {
+  width: 100%;
+  display: flex;
+  gap: 16px;
+  padding: 0 56px 24px;
+}
+
+.ghost {
+  flex: 1;
+  padding: 16px 22px;
+  border-radius: 999px;
+  background: #fff;
+  border: 1.5px solid #D1D9E5;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+  color: #596680;
+  text-decoration: none;
+}
+
+.ghost.danger { border-color: #F08C8C; color: #D94040; }
+
+.inline-form { display: contents; }
+.full-form { width: 100%; }
+
+.timeout-notice {
+  width: calc(100% - 112px);
+  padding: 20px 28px;
+  border-radius: 20px;
+  background: #FFF4DE;
+  border: 1.5px solid #F5C268;
+  color: #8A5A00;
+  text-align: center;
+  font-size: 22px;
+  font-weight: 600;
+}
+.hidden { display: none !important; }

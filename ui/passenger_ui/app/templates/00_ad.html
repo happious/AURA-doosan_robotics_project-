@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>AURA · 초기 화면</title>
+<style>
+  * { box-sizing: border-box; margin:0; padding:0; }
+  html, body { width:100%; height:100%; margin:0; overflow:hidden; }
+  body.kiosk-body { font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; background:#0E0E10; }
+  .kiosk-touch-root {
+    position:fixed; inset:0; display:block; overflow:hidden; cursor:pointer; text-decoration:none; color:inherit;
+    touch-action:manipulation; -webkit-tap-highlight-color:transparent; background:#0E0E10;
+  }
+  .slide { position:absolute; inset:0; opacity:0; pointer-events:none; transition:opacity .45s ease; overflow:hidden; background:#0E0E10; }
+  .slide.active { opacity:1; }
+  .design-frame {
+    position:absolute; left:50%; top:50%; width:1080px; height:3240px; transform-origin:center center;
+    overflow:hidden; border-radius:0; box-shadow:none;
+  }
+  .touch-hint-global {
+    position:absolute; left:50%; bottom:max(28px, env(safe-area-inset-bottom)); transform:translateX(-50%); z-index:20;
+    padding:14px 30px; border-radius:999px; background:rgba(255,255,255,.18); backdrop-filter:blur(10px);
+    font-size:clamp(14px, 2.6vw, 22px); font-weight:700; color:rgba(255,255,255,.92); white-space:nowrap;
+    animation:hintPulse 2.4s ease-in-out infinite;
+  }
+  @keyframes hintPulse { 0%,100% { opacity:.55; transform:translateX(-50%) scale(1); } 50% { opacity:1; transform:translateX(-50%) scale(1.03); } }
+
+  /* Slide 0: AURA original standby saver */
+  .aura-frame { position:relative; background:linear-gradient(108deg,#BFE58C 14%,#33B8AD 46%,#26739E 86%); }
+  @keyframes drift1 { 0%,100% { transform:translate(0,0) rotate(-8deg) scale(1); } 50% { transform:translate(30px,-40px) rotate(-4deg) scale(1.05); } }
+  @keyframes drift2 { 0%,100% { transform:translate(0,0) rotate(6deg) scale(1); } 50% { transform:translate(-25px,35px) rotate(10deg) scale(1.04); } }
+  @keyframes drift3 { 0%,100% { transform:translate(0,0) rotate(4deg) scale(1); } 50% { transform:translate(20px,25px) rotate(0deg) scale(1.06); } }
+  .blob { position:absolute; border-radius:50%; filter:blur(90px); }
+  .blob.b1 { width:900px; height:1300px; left:-180px; top:-100px; background:#fff; opacity:.10; }
+  .blob.b2 { width:760px; height:1100px; left:280px; top:340px; background:#33C7CC; opacity:.55; animation:drift1 14s ease-in-out infinite; }
+  .blob.b3 { width:620px; height:900px; left:120px; top:950px; background:#2FA89E; opacity:.50; animation:drift2 17s ease-in-out infinite; }
+  .blob.b4 { width:560px; height:780px; left:420px; top:1550px; background:#8DDB6C; opacity:.40; animation:drift3 15s ease-in-out infinite; }
+  .blob.b5 { width:480px; height:620px; left:60px; top:850px; background:#E5FADC; opacity:.30; filter:blur(70px); }
+  .blob.b6 { width:520px; height:500px; left:300px; top:2150px; background:#0F5C66; opacity:.45; animation:drift1 19s ease-in-out infinite; }
+  .blob.b7 { width:400px; height:460px; left:150px; top:2650px; background:#33C7CC; opacity:.35; animation:drift2 13s ease-in-out infinite; }
+  .aura-wordmark { position:absolute; left:50%; top:56px; transform:translateX(-50%); font-weight:700; font-size:22px; letter-spacing:4px; color:rgba(255,255,255,.7); white-space:nowrap; }
+
+  /* Slide 1: Departures board */
+  .time-frame { position:relative; display:flex; flex-direction:column; align-items:center; background:#0E0E10; color:#fff; }
+  .time-header { width:100%; display:flex; align-items:center; gap:16px; padding:64px 64px 40px; }
+  .plane-icon { width:56px; height:56px; border-radius:12px; background:#FFB826; display:flex; align-items:center; justify-content:center; font-size:28px; font-weight:700; color:#0D0D0F; flex-shrink:0; }
+  .time-header h1 { font-size:40px; font-weight:700; color:#fff; white-space:nowrap; }
+  .board { width:100%; display:flex; flex-direction:column; padding:0 64px; }
+  .col-header { width:100%; display:flex; padding-bottom:20px; font-weight:700; font-size:22px; color:#fff; }
+  .col-header .c-time { width:180px; }
+  .col-header .c-dest { width:500px; }
+  .row { width:100%; display:flex; padding:12px 0; font-weight:600; font-size:24px; letter-spacing:2px; border-top:1px solid #2E2E33; }
+  .row .r-time { width:180px; color:#D9D9DE; }
+  .row .r-dest { width:500px; color:#FFB826; }
+  .row .r-flight { color:#D9D9DE; white-space:nowrap; }
+  .time-spacer { flex:1 0 0; min-height:1px; width:100%; }
+
+  /* Slide 2: Doosan Robotics Boot Camp ad */
+  .boot-frame { position:relative; display:flex; flex-direction:column; align-items:center; background:linear-gradient(180deg,#0F1733 0%,#0A0F24 60%,#050814 100%); color:#fff; }
+  .boot-top-row { width:100%; display:flex; justify-content:center; padding:56px 64px 0; }
+  .boot-top-row p { font-size:20px; font-weight:600; color:#E5EBF5; text-align:center; white-space:nowrap; }
+  .title-block { width:100%; display:flex; flex-direction:column; align-items:center; gap:4px; padding-top:20px; }
+  .title-block .t1 { font-size:52px; font-weight:700; color:#fff; white-space:nowrap; }
+  .title-block .t2 { font-size:38px; font-weight:700; color:#fff; letter-spacing:6px; white-space:nowrap; }
+  .subtitle { width:100%; height:127px; display:flex; flex-direction:column; align-items:center; padding:26px 64px 0; }
+  .subtitle p { font-size:21px; font-weight:600; color:#F0BF4D; text-align:center; white-space:nowrap; }
+  .hero-stage { position:relative; width:100%; height:544px; overflow:hidden; }
+  .diag-panel { position:absolute; top:-20px; width:520px; height:420px; transform:rotate(14deg); border-left:1px solid rgba(240,191,77,.6); }
+  .diag-panel.p1 { left:-161px; background:rgba(38,89,166,.18); }
+  .diag-panel.p2 { left:218px; background:rgba(64,115,184,.18); }
+  .diag-panel.p3 { left:598px; background:rgba(89,140,204,.18); }
+  .icon-circle { position:absolute; top:170px; width:80px; height:80px; border-radius:999px; background:rgba(255,255,255,.12); display:flex; align-items:center; justify-content:center; font-size:38px; }
+  .icon-circle.i1 { left:90px; } .icon-circle.i2 { left:470px; } .icon-circle.i3 { left:850px; }
+  .body-text { width:100%; height:180px; display:flex; flex-direction:column; align-items:center; gap:4px; padding-top:30px; text-align:center; }
+  .body-text .b1 { font-size:18px; font-weight:400; color:#D1D9EB; white-space:nowrap; }
+  .body-text .b2 { font-size:18px; font-weight:700; color:#fff; white-space:nowrap; }
+  .callout { width:100%; height:309px; display:flex; flex-direction:column; align-items:center; gap:2px; padding-top:28px; text-align:center; }
+  .callout .small { font-size:17px; font-weight:600; color:#F0BF4D; white-space:nowrap; }
+  .callout .big { font-size:42px; font-weight:700; color:#fff; white-space:nowrap; }
+  .tag-row { width:100%; display:flex; gap:8px; align-items:center; padding:30px 24px 0; }
+  .tag-pill { padding:9px 14px; border-radius:999px; background:rgba(255,255,255,.08); font-size:13px; font-weight:600; color:#D9E0F2; white-space:nowrap; }
+  .perks-wrap { width:100%; display:flex; flex-direction:column; align-items:center; gap:16px; padding:36px 64px 0; }
+  .perks-label { padding:8px 22px; border-radius:999px; background:#F0BF4D; font-size:16px; font-weight:700; color:#141424; white-space:nowrap; }
+  .perks-box { width:100%; display:flex; justify-content:space-between; padding:32px 16px; border-radius:16px; border:1.5px dashed rgba(255,255,255,.25); }
+  .perk-col { display:flex; flex-direction:column; align-items:center; gap:6px; }
+  .perk-col .top { font-size:20px; font-weight:700; color:#F0BF4D; white-space:nowrap; }
+  .perk-col .bottom { font-size:13px; font-weight:400; color:#BFC7DB; white-space:nowrap; }
+  .boot-spacer { flex:1 0 0; min-height:1px; width:100%; }
+  .bottom-bar { width:100%; display:flex; flex-direction:column; gap:24px; padding:32px 56px; background:#1C336B; }
+  .bar-top { width:100%; display:flex; justify-content:space-between; align-items:center; }
+  .bar-left { display:flex; flex-direction:column; gap:6px; }
+  .bar-left .logo { font-size:26px; font-weight:700; color:#fff; letter-spacing:1px; white-space:nowrap; }
+  .bar-left .sub1 { font-size:16px; font-weight:600; color:#F0BF4D; white-space:nowrap; }
+  .bar-left .sub2 { font-size:13px; font-weight:400; color:#BFCCE5; white-space:nowrap; }
+  .qr-box { width:84px; height:84px; border-radius:10px; background:#fff; display:flex; align-items:center; justify-content:center; font-size:38px; color:#1A1A26; flex-shrink:0; }
+  .bar-info { display:flex; flex-direction:column; gap:6px; font-size:14px; }
+  .bar-info .bar-row { display:flex; gap:10px; white-space:nowrap; }
+  .bar-info .bar-row .label { font-weight:400; color:#BFCCE5; }
+  .bar-info .bar-row .value { font-weight:600; color:#F0BF4D; }
+</style>
+</head>
+<body class="kiosk-body" data-system-state-url="{{ url_for('api.system_state') }}">
+<a href="{{ url_for('passenger.wake') }}" class="kiosk-touch-root" aria-label="화면을 터치해 서비스를 시작합니다">
+  <section class="slide" data-slide="aura">
+    <div class="design-frame aura-frame">
+      <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div><div class="blob b4"></div>
+      <div class="blob b5"></div><div class="blob b6"></div><div class="blob b7"></div>
+      <div class="aura-wordmark">AURA</div>
+    </div>
+  </section>
+
+  <section class="slide" data-slide="time">
+    <div class="design-frame time-frame">
+      <div class="time-header"><div class="plane-icon">✈</div><h1>Departures</h1></div>
+      <div class="board">
+        <div class="col-header"><div class="c-time">Time</div><div class="c-dest">Destination</div><div class="c-flight">Flight</div></div>
+        <div class="row"><div class="r-time">11:05</div><div class="r-dest">BOSTON</div><div class="r-flight">BK165</div></div>
+        <div class="row"><div class="r-time">11:20</div><div class="r-dest">MIAMI</div><div class="r-flight">AZ3533</div></div>
+        <div class="row"><div class="r-time">12:10</div><div class="r-dest">LONDON</div><div class="r-flight">CS4110</div></div>
+        <div class="row"><div class="r-time">12:25</div><div class="r-dest">TOKYO</div><div class="r-flight">BA683</div></div>
+        <div class="row"><div class="r-time">12:40</div><div class="r-dest">NEW YORK</div><div class="r-flight">LH7549</div></div>
+        <div class="row"><div class="r-time">12:45</div><div class="r-dest">PARIS</div><div class="r-flight">NS8055</div></div>
+        <div class="row"><div class="r-time">12:55</div><div class="r-dest">SAN FRANCISCO</div><div class="r-flight">AY630</div></div>
+        <div class="row"><div class="r-time">13:15</div><div class="r-dest">ROME</div><div class="r-flight">AC504</div></div>
+        <div class="row"><div class="r-time">13:30</div><div class="r-dest">BANGKOK</div><div class="r-flight">GE7730</div></div>
+        <div class="row"><div class="r-time">14:10</div><div class="r-dest">CHICAGO</div><div class="r-flight">EK120</div></div>
+        <div class="row"><div class="r-time">14:15</div><div class="r-dest">DUBAI</div><div class="r-flight">BE5671</div></div>
+      </div>
+      <div class="board">
+        <div class="row"><div class="r-time">11:05</div><div class="r-dest">BOSTON</div><div class="r-flight">BK165</div></div>
+        <div class="row"><div class="r-time">11:20</div><div class="r-dest">MIAMI</div><div class="r-flight">AZ3533</div></div>
+        <div class="row"><div class="r-time">12:10</div><div class="r-dest">LONDON</div><div class="r-flight">CS4110</div></div>
+        <div class="row"><div class="r-time">12:25</div><div class="r-dest">TOKYO</div><div class="r-flight">BA683</div></div>
+        <div class="row"><div class="r-time">12:40</div><div class="r-dest">NEW YORK</div><div class="r-flight">LH7549</div></div>
+        <div class="row"><div class="r-time">12:45</div><div class="r-dest">PARIS</div><div class="r-flight">NS8055</div></div>
+        <div class="row"><div class="r-time">12:55</div><div class="r-dest">SAN FRANCISCO</div><div class="r-flight">AY630</div></div>
+        <div class="row"><div class="r-time">13:15</div><div class="r-dest">ROME</div><div class="r-flight">AC504</div></div>
+        <div class="row"><div class="r-time">13:30</div><div class="r-dest">BANGKOK</div><div class="r-flight">GE7730</div></div>
+        <div class="row"><div class="r-time">14:10</div><div class="r-dest">CHICAGO</div><div class="r-flight">EK120</div></div>
+        <div class="row"><div class="r-time">14:15</div><div class="r-dest">DUBAI</div><div class="r-flight">BE5671</div></div>
+      </div>
+      <div class="time-spacer"></div>
+    </div>
+  </section>
+
+  <section class="slide" data-slide="bootcamp">
+    <div class="design-frame boot-frame">
+      <div class="boot-top-row"><p>글로벌 기업 두산의 첨단 기술 리더 육성</p></div>
+      <div class="title-block"><div class="t1">Doosan Robotics</div><div class="t2">BOOT CAMP</div></div>
+      <div class="subtitle"><p>AI·로봇 엔지니어 실무 맞춤형 교육 과정 (초급/입문반)</p></div>
+      <div class="hero-stage">
+        <div class="diag-panel p1"></div><div class="icon-circle i1">📦</div>
+        <div class="diag-panel p2"></div><div class="icon-circle i2">🚗</div>
+        <div class="diag-panel p3"></div><div class="icon-circle i3">☕</div>
+      </div>
+      <div class="body-text"><div class="b1">경력직에 버금가는 신입 개발자 역량 강화를 위한</div><div class="b2">최신기술 실무역량부터 팀프로젝트 역량까지</div></div>
+      <div class="callout"><div class="small">전공 무관</div><div class="big">단 1번의 선택!</div></div>
+      <div class="tag-row"><div class="tag-pill">#Python</div><div class="tag-pill">#컴퓨터비전</div><div class="tag-pill">#ROS-2</div><div class="tag-pill">#협동로봇 현업실무</div><div class="tag-pill">#지능형로봇 현업실무</div></div>
+      <div class="perks-wrap"><div class="perks-label">우수 장학생 특전</div><div class="perks-box">
+        <div class="perk-col"><div class="top">인턴쉽</div><div class="bottom">(6개월, 3개월)</div></div>
+        <div class="perk-col"><div class="top">서류면제</div><div class="bottom">(신입)</div></div>
+        <div class="perk-col"><div class="top">장학금</div><div class="bottom">(300만원)</div></div>
+      </div></div>
+      <div class="boot-spacer"></div>
+      <div class="bottom-bar">
+        <div class="bar-top"><div class="bar-left"><div class="logo">ROKEY</div><div class="sub1">10기 모집중</div><div class="sub2">7월 8일 개강 (6개월)</div></div><div class="qr-box">▦</div></div>
+        <div class="bar-info"><div class="bar-row"><span class="label">모집기간 |</span><span class="value">2026.06.23(일)까지</span></div><div class="bar-row"><span class="label">교육비용 |</span><span class="value">무료 (전액지원)</span></div><div class="bar-row"><span class="label">교육장소 |</span><span class="value">온라인 · 오프라인(구로디지털단지)</span></div></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="touch-hint-global">화면을 터치해 주세요</div>
+</a>
+
+<script>
+  const DESIGN_W = 1080;
+  const DESIGN_H = 3240;
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  let order = [];
+  let orderIndex = 0;
+  let currentSlideIndex = -1;
+
+  function shuffle(values) {
+    const arr = values.slice();
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+
+  function makeOrder() {
+    const base = slides.map((_, idx) => idx);
+    let next = shuffle(base);
+    if (next.length > 1 && next[0] === currentSlideIndex) {
+      [next[0], next[1]] = [next[1], next[0]];
+    }
+    order = next;
+    orderIndex = 0;
+  }
+
+  function showSlide(idx) {
+    slides.forEach((slide, i) => slide.classList.toggle('active', i === idx));
+    currentSlideIndex = idx;
+  }
+
+  function nextSlide() {
+    if (!order.length || orderIndex >= order.length) makeOrder();
+    showSlide(order[orderIndex]);
+    orderIndex += 1;
+  }
+
+  function fitKioskCover() {
+    const scale = Math.max(window.innerWidth / DESIGN_W, window.innerHeight / DESIGN_H);
+    document.querySelectorAll('.design-frame').forEach((el) => {
+      el.style.transform = `translate(-50%, -50%) scale(${scale})`;
+    });
+  }
+
+  window.addEventListener('resize', fitKioskCover);
+  fitKioskCover();
+  makeOrder();
+  nextSlide();
+  window.setInterval(nextSlide, 7000);
+</script>
+<script src="{{ url_for('static', filename='js/emergency_watch.js') }}"></script>
+</body>
+</html>

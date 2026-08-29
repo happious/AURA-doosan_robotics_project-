@@ -1,0 +1,10 @@
+string mode
+float64 dest_x
+float64 dest_y
+uint8 priority
+---
+bool success
+string final_state
+---
+string current_mode
+float64 progress_pct

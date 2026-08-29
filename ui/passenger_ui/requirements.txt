@@ -1,0 +1,4 @@
+# 승객 키오스크 UI (AMR1 / AMR3)
+# rclpy / std_msgs / sensor_msgs 는 ROS2 Humble(apt)에서 제공됩니다.
+# ROS 없이 print-only 모드로도 실행 가능합니다.
+Flask>=3.0,<4.0

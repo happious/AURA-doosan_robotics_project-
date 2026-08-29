@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AURA 관리자 대시보드</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand-group">
+        <div class="brand-mark"><span></span><span></span></div>
+        <div>
+          <p class="eyebrow">AIRPORT USER-SUPPORT & RESPONSE AMR</p>
+          <h1>AURA 통합 관제 대시보드</h1>
+        </div>
+      </div>
+      <div class="topbar-status">
+        <div class="status-pill" id="dbStatus"><i></i><span>DB 확인 중</span></div>
+        <div class="status-pill" id="cameraStatus"><i></i><span>CCTV 확인 중</span></div>
+        <div class="status-pill" id="populationStatus"><i></i><span>인원수 확인 중</span></div>
+        <div class="clock-box">
+          <strong id="clockTime">--:--:--</strong>
+          <span id="clockDate">----</span>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="summary-grid">
+        <article class="summary-card accent-purple">
+          <span class="summary-label">공항 전체 인원수</span>
+          <strong id="summaryPopulation">-</strong>
+          <small id="summaryPopulationStatus">{{ population_topic }} 수신 대기</small>
+        </article>
+        <article class="summary-card accent-teal">
+          <span class="summary-label">등록 로봇</span>
+          <strong id="summaryRobots">0</strong>
+          <small>robot1 · robot3</small>
+        </article>
+        <article class="summary-card accent-red">
+          <span class="summary-label">응급 상황 발생 횟수</span>
+          <strong id="summaryEmergencies">0</strong>
+          <small>DB 누적 응급 이벤트</small>
+        </article>
+        <article class="summary-card accent-orange">
+          <span class="summary-label">완료 서비스</span>
+          <strong id="summaryCompleted">0</strong>
+          <small>DB 누적 기록</small>
+        </article>
+      </section>
+
+      <section class="workspace-grid">
+        <div class="left-column">
+          <section class="panel robot-panel">
+            <div class="panel-head">
+              <div>
+                <p class="section-kicker">FLEET STATUS</p>
+                <h2>AMR 실시간 상태</h2>
+              </div>
+              <span class="subtle" id="robotUpdated">상태 대기 중</span>
+            </div>
+            <div class="robot-grid" id="robotGrid"></div>
+          </section>
+
+        </div>
+
+        <div class="right-column">
+          <section class="panel camera-panel">
+            <div class="panel-head camera-head">
+              <div>
+                <p class="section-kicker">LIVE CCTV</p>
+                <h2>공항 현장 영상</h2>
+              </div>
+              <span class="topic-chip">{{ cctv_topic }}</span>
+            </div>
+            <div class="video-shell">
+              <img id="cctvStream" src="{{ url_for('cctv_video') }}" alt="CCTV 실시간 영상">
+              <div class="live-badge"><i></i> LIVE</div>
+              <div class="camera-overlay">
+                <span id="cameraResolution">영상 수신 대기</span>
+                <span id="cameraLastSeen">--</span>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel emergency-panel" id="emergencyPanel">
+            <div class="panel-head">
+              <div>
+                <p class="section-kicker">EMERGENCY RESPONSE</p>
+                <h2>응급상황 현황</h2>
+              </div>
+            </div>
+            <div id="emergencyList" class="emergency-list"></div>
+          </section>
+        </div>
+      </section>
+
+      <section class="lower-grid">
+        <section class="panel snapshot-panel">
+          <div class="panel-head">
+            <div>
+              <p class="section-kicker">FALL SNAPSHOT</p>
+              <h2>낙상 감지 저장 장면</h2>
+            </div>
+            <span class="subtle">/cctv/fall_detection_image</span>
+          </div>
+          <div class="snapshot-grid" id="snapshotGrid"></div>
+        </section>
+
+        <section class="panel log-panel">
+          <div class="panel-head">
+            <div>
+              <p class="section-kicker">SYSTEM EVENT LOG</p>
+              <h2>최근 이벤트</h2>
+            </div>
+          </div>
+          <div class="log-list" id="logList"></div>
+        </section>
+      </section>
+    </main>
+
+    <footer>
+      <span>DB: {{ db_path }}</span>
+      <span>읽기 전용 관제 화면 · 실제 제어 명령은 ROS2 중앙 노드를 사용합니다.</span>
+    </footer>
+  </div>
+
+  <div class="toast" id="toast"></div>
+  <script src="{{ url_for('static', filename='js/dashboard.js') }}?v=20260713-emergency-count"></script>
+</body>
+</html>

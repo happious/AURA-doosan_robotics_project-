@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>cctv_perception</name>
+  <version>0.1.0</version>
+  <description>고정 CCTV 인지 노드: YOLO11-pose 기반 쓰러짐 감지, 인원수 카운트, 혼잡구역(hot_place) 감지.</description>
+  <maintainer email="team@example.com">robot_control_team</maintainer>
+  <license>Apache-2.0</license>
+
+  <depend>rclpy</depend>
+  <depend>std_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>sensor_msgs</depend>
+
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+</package>

@@ -1,0 +1,679 @@
+/*
+ * AURA passenger UI responsive layer
+ * ----------------------------------
+ * Existing templates were designed at a fixed 1080 x 3240 kiosk canvas.
+ * This file is loaded after the page-local styles and converts the screens
+ * into a fluid mobile/tablet layout without changing routes or ROS behavior.
+ */
+
+:root {
+  --page-max-width: 820px;
+  --page-pad: clamp(18px, 5vw, 44px);
+  --section-gap: clamp(22px, 4.5vh, 54px);
+  --safe-top: max(12px, env(safe-area-inset-top));
+  --safe-bottom: max(18px, env(safe-area-inset-bottom));
+}
+
+html {
+  width: 100%;
+  min-height: 100%;
+  background: #1b1e27;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body.kiosk-body {
+  width: 100%;
+  min-height: 100%;
+  height: auto !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  display: block !important;
+  background: #1b1e27;
+  overscroll-behavior-y: contain;
+}
+
+.kiosk-viewport {
+  width: 100% !important;
+  min-height: 100dvh !important;
+  height: auto !important;
+  display: flex !important;
+  align-items: stretch !important;
+  justify-content: center !important;
+  padding: 0 !important;
+}
+
+.kiosk-viewport .frame,
+.frame {
+  width: min(100%, var(--page-max-width)) !important;
+  max-width: var(--page-max-width) !important;
+  min-height: 100dvh;
+  transform: none !important;
+  transform-origin: initial !important;
+  border-radius: 0 !important;
+  overflow: visible !important;
+  box-shadow: none !important;
+  background: #fff;
+}
+
+.zone {
+  width: 100% !important;
+  height: auto !important;
+  min-height: 100dvh !important;
+  gap: var(--section-gap) !important;
+  padding-bottom: var(--safe-bottom) !important;
+  overflow: visible !important;
+  justify-content: flex-start;
+}
+
+/* Do not let the old inline fixed-layout values force huge blank areas. */
+.zone[style] {
+  gap: var(--section-gap) !important;
+  padding-bottom: var(--safe-bottom) !important;
+}
+
+.header {
+  width: 100% !important;
+  padding: calc(var(--safe-top) + 16px) var(--page-pad) 0 !important;
+  gap: clamp(10px, 2.5vw, 18px) !important;
+}
+
+.header h1,
+.title-block h1 {
+  font-size: clamp(22px, 6vw, 34px) !important;
+  line-height: 1.25;
+  white-space: normal !important;
+  overflow-wrap: anywhere;
+}
+
+.header p,
+.title-block p {
+  font-size: clamp(14px, 3.7vw, 18px) !important;
+  line-height: 1.45;
+  white-space: normal !important;
+  overflow-wrap: anywhere;
+}
+
+.logo {
+  font-size: clamp(24px, 6vw, 32px) !important;
+}
+
+.lang-row {
+  gap: 6px !important;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.pill {
+  padding: 7px 11px !important;
+  font-size: clamp(12px, 3vw, 14px) !important;
+}
+
+.icon-btn {
+  width: clamp(44px, 12vw, 54px) !important;
+  height: clamp(44px, 12vw, 54px) !important;
+  font-size: clamp(20px, 5vw, 24px) !important;
+  flex: 0 0 auto;
+}
+
+.robot-face {
+  width: clamp(142px, 42vw, 230px) !important;
+  height: clamp(142px, 42vw, 230px) !important;
+  padding: clamp(7px, 2vw, 11px) !important;
+}
+
+.robot-face-inner {
+  gap: clamp(14px, 4vw, 24px) !important;
+}
+
+.eye {
+  width: clamp(30px, 9vw, 48px) !important;
+  height: clamp(30px, 9vw, 48px) !important;
+  border-width: clamp(4px, 1.5vw, 7px) !important;
+}
+
+.status-block {
+  width: 100%;
+  gap: clamp(14px, 3vh, 24px) !important;
+  padding: 0 var(--page-pad) !important;
+}
+
+.status-title,
+.status-block .small-title {
+  max-width: 100%;
+  font-size: clamp(24px, 7vw, 40px) !important;
+  line-height: 1.25;
+  text-align: center;
+  white-space: normal !important;
+  overflow-wrap: anywhere;
+}
+
+.badge-row {
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.badge {
+  font-size: clamp(12px, 3.2vw, 15px) !important;
+}
+
+.touch-prompt {
+  width: calc(100% - (var(--page-pad) * 2));
+  max-width: 680px;
+  padding: clamp(16px, 4vw, 22px) clamp(18px, 5vw, 38px) !important;
+  white-space: normal !important;
+  text-align: center;
+}
+
+.touch-prompt .txt {
+  font-size: clamp(22px, 7vw, 42px) !important;
+  line-height: 1.25;
+  white-space: normal !important;
+}
+
+.touch-prompt .emoji {
+  font-size: clamp(21px, 6vw, 30px) !important;
+}
+
+.help-row,
+.footer,
+.end-block,
+.end-row,
+.action-buttons,
+.cta-section,
+.grid {
+  width: 100% !important;
+  padding-left: var(--page-pad) !important;
+  padding-right: var(--page-pad) !important;
+}
+
+.help-row {
+  margin-top: auto;
+  padding-top: 0 !important;
+  padding-bottom: var(--safe-bottom) !important;
+  gap: 10px !important;
+}
+
+.ghost,
+.end-btn,
+.secondary-btn {
+  min-height: 48px;
+  padding: 13px 16px !important;
+  font-size: clamp(13px, 3.5vw, 17px) !important;
+  line-height: 1.3;
+  white-space: normal !important;
+}
+
+/* Service selection */
+.cta-section {
+  gap: clamp(14px, 3vw, 24px) !important;
+}
+
+.cta-card {
+  gap: clamp(14px, 4vw, 24px) !important;
+  padding: clamp(22px, 6vw, 36px) clamp(18px, 5vw, 32px) !important;
+  border-radius: clamp(20px, 5vw, 30px) !important;
+}
+
+.cta-icon {
+  width: clamp(62px, 18vw, 84px) !important;
+  height: clamp(62px, 18vw, 84px) !important;
+  font-size: clamp(30px, 8vw, 40px) !important;
+  border-radius: clamp(16px, 4vw, 22px) !important;
+}
+
+.cta-text {
+  min-width: 0;
+}
+
+.cta-text h3 {
+  font-size: clamp(21px, 5.8vw, 28px) !important;
+  line-height: 1.25;
+  white-space: normal !important;
+}
+
+.cta-text p {
+  font-size: clamp(13px, 3.6vw, 17px) !important;
+  line-height: 1.45;
+  white-space: normal !important;
+}
+
+/* Destination selection */
+.grid {
+  gap: clamp(12px, 3vw, 20px) !important;
+}
+
+.grid-row {
+  width: 100%;
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(12px, 3vw, 20px) !important;
+}
+
+.dest-card {
+  width: 100% !important;
+  min-width: 0;
+  height: auto !important;
+  min-height: clamp(170px, 45vw, 260px);
+  padding: clamp(18px, 5vw, 28px) 12px;
+  border-radius: clamp(20px, 5vw, 28px) !important;
+  gap: clamp(10px, 2vw, 16px) !important;
+}
+
+.dest-icon {
+  width: clamp(66px, 20vw, 94px) !important;
+  height: clamp(66px, 20vw, 94px) !important;
+  font-size: clamp(34px, 9vw, 44px) !important;
+}
+
+.dest-card h3 {
+  max-width: 100%;
+  font-size: clamp(18px, 4.8vw, 24px) !important;
+  text-align: center;
+  line-height: 1.25;
+  white-space: normal !important;
+  overflow-wrap: anywhere;
+}
+
+.dest-tag {
+  font-size: clamp(12px, 3vw, 14px) !important;
+}
+
+.mic-btn {
+  width: clamp(92px, 27vw, 140px) !important;
+  height: clamp(92px, 27vw, 140px) !important;
+}
+
+.mic-btn svg {
+  width: 46% !important;
+  height: 46% !important;
+}
+
+/* Luggage loading */
+.loading-zone {
+  padding-bottom: var(--safe-bottom) !important;
+}
+
+.illo-block {
+  width: 100%;
+  padding: 0 var(--page-pad) !important;
+  gap: clamp(18px, 4vh, 30px) !important;
+}
+
+.illo-circle {
+  width: clamp(150px, 43vw, 240px) !important;
+  height: clamp(150px, 43vw, 240px) !important;
+  font-size: clamp(70px, 20vw, 105px) !important;
+}
+
+.illo-block .caption {
+  max-width: 100%;
+  font-size: clamp(25px, 7vw, 42px) !important;
+  line-height: 1.3;
+  white-space: normal !important;
+}
+
+.note-row {
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.note-badge {
+  font-size: clamp(12px, 3.2vw, 15px) !important;
+}
+
+.primary-btn,
+.retry-btn,
+.end-btn,
+.secondary-btn {
+  width: 100% !important;
+  min-height: 54px;
+  font-size: clamp(20px, 6vw, 34px) !important;
+  padding: clamp(16px, 4vw, 24px) clamp(16px, 4vw, 28px) !important;
+  line-height: 1.25;
+  white-space: normal !important;
+  text-align: center;
+}
+
+/* Alignment / camera screens */
+.vf-group {
+  width: 100%;
+  padding: 0 var(--page-pad);
+  gap: clamp(16px, 3vh, 24px) !important;
+}
+
+.viewfinder,
+.manual-align-stage {
+  width: min(100%, 560px) !important;
+  height: auto !important;
+  aspect-ratio: 560 / 760;
+  max-height: 68dvh;
+  border-radius: clamp(18px, 5vw, 28px) !important;
+}
+
+.camera-image,
+.camera-placeholder,
+.overlay {
+  width: 100%;
+  height: 100%;
+}
+
+.vf-v {
+  left: 50% !important;
+  height: 100% !important;
+}
+
+.vf-h {
+  top: 50% !important;
+  width: 100% !important;
+}
+
+.vf-bracket {
+  display: none;
+}
+
+.vf-silhouette-body {
+  left: 34% !important;
+  top: 31% !important;
+  width: 32% !important;
+  height: 39% !important;
+}
+
+.vf-silhouette-head {
+  left: 42.5% !important;
+  top: 21% !important;
+  width: 15% !important;
+  height: auto !important;
+  aspect-ratio: 1;
+}
+
+.vf-bbox {
+  left: 29.5% !important;
+  top: 17% !important;
+  width: 41% !important;
+  height: 63% !important;
+  border-width: 3px !important;
+}
+
+.vf-bbox.leg-box {
+  top: 39% !important;
+  height: 44% !important;
+}
+
+.vf-label {
+  left: 29.5% !important;
+  top: 12.5% !important;
+  max-width: 62%;
+  font-size: clamp(11px, 2.8vw, 15px) !important;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.vf-status-pill {
+  left: 50% !important;
+  top: auto !important;
+  bottom: 6% !important;
+  transform: translateX(-50%);
+  max-width: 88%;
+  padding: 9px 14px !important;
+}
+
+.vf-status-text {
+  font-size: clamp(12px, 3.1vw, 16px) !important;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.vf-caption {
+  width: 100%;
+  padding: 0 6px;
+}
+
+.vf-caption h2 {
+  font-size: clamp(21px, 5.8vw, 30px) !important;
+  line-height: 1.3;
+  white-space: normal !important;
+}
+
+.vf-caption p {
+  font-size: clamp(14px, 3.8vw, 18px) !important;
+  line-height: 1.45;
+  white-space: normal !important;
+}
+
+.manual-align-stage {
+  min-height: 430px;
+  padding: clamp(24px, 6vw, 48px);
+  gap: clamp(30px, 7vw, 58px) !important;
+}
+
+.manual-robot {
+  width: clamp(150px, 42vw, 240px) !important;
+  height: clamp(150px, 42vw, 240px) !important;
+}
+
+.manual-person {
+  transform: scale(.72);
+  transform-origin: center;
+  margin-block: -40px;
+}
+
+.footer {
+  gap: 12px !important;
+  padding-bottom: var(--safe-bottom) !important;
+}
+
+/* Mission progress */
+.mission-badge {
+  max-width: calc(100% - 64px);
+  font-size: clamp(13px, 3.5vw, 16px) !important;
+  white-space: normal !important;
+}
+
+.center-content {
+  width: 100%;
+  padding: 0 var(--page-pad);
+  gap: clamp(18px, 4vh, 28px) !important;
+}
+
+.status-title {
+  font-size: clamp(23px, 6.3vw, 32px) !important;
+}
+
+.status-sub {
+  max-width: 100%;
+  font-size: clamp(14px, 3.8vw, 18px) !important;
+  line-height: 1.45;
+  white-space: normal !important;
+}
+
+.progress-track {
+  width: min(100%, 480px) !important;
+}
+
+.progress-fill {
+  max-width: 100%;
+}
+
+/* Arrival */
+.spacer {
+  height: clamp(18px, 5vh, 56px) !important;
+}
+
+.success-block {
+  width: 100% !important;
+  height: auto !important;
+  padding: 0 var(--page-pad);
+  gap: clamp(14px, 3vh, 20px) !important;
+}
+
+.check-circle {
+  width: clamp(130px, 38vw, 210px) !important;
+  height: clamp(130px, 38vw, 210px) !important;
+  font-size: clamp(62px, 18vw, 92px) !important;
+}
+
+.success-block h1 {
+  max-width: 100%;
+  font-size: clamp(27px, 7vw, 42px) !important;
+  line-height: 1.25;
+  white-space: normal !important;
+}
+
+.success-block p {
+  max-width: 100%;
+  font-size: clamp(18px, 5vw, 26px) !important;
+  white-space: normal !important;
+}
+
+/* Emergency */
+.alert-banner {
+  padding: calc(var(--safe-top) + 12px) var(--page-pad) 18px !important;
+  flex-wrap: wrap;
+  text-align: center;
+}
+
+.alert-banner .txt {
+  max-width: 100%;
+  font-size: clamp(21px, 5.8vw, 30px) !important;
+  line-height: 1.3;
+  white-space: normal !important;
+}
+
+.warning-center {
+  width: 100%;
+  padding: 0 var(--page-pad);
+}
+
+.icon-stage {
+  width: clamp(190px, 55vw, 320px) !important;
+  height: clamp(190px, 55vw, 320px) !important;
+}
+
+.ring.outer {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.ring.mid {
+  width: 79.4% !important;
+  height: 79.4% !important;
+  left: 10.3% !important;
+  top: 10.3% !important;
+}
+
+.ring.core {
+  width: 58.8% !important;
+  height: 58.8% !important;
+  left: 20.6% !important;
+  top: 20.6% !important;
+}
+
+.ring.core .bang {
+  font-size: clamp(68px, 20vw, 106px) !important;
+}
+
+.warning-center .sub {
+  max-width: 100%;
+  font-size: clamp(15px, 4vw, 20px) !important;
+  line-height: 1.5;
+  white-space: normal !important;
+}
+
+.action-buttons {
+  gap: 12px !important;
+}
+
+.action-card {
+  gap: 14px !important;
+  padding: clamp(18px, 5vw, 28px) clamp(16px, 4.5vw, 28px) !important;
+  border-radius: clamp(18px, 5vw, 26px) !important;
+}
+
+.action-icon {
+  width: clamp(54px, 15vw, 68px) !important;
+  height: clamp(54px, 15vw, 68px) !important;
+  font-size: clamp(26px, 7vw, 34px) !important;
+}
+
+.action-text {
+  min-width: 0;
+}
+
+.action-text h3 {
+  font-size: clamp(19px, 5vw, 24px) !important;
+  line-height: 1.3;
+  white-space: normal !important;
+}
+
+.action-text p {
+  font-size: clamp(13px, 3.4vw, 16px) !important;
+  line-height: 1.45;
+  white-space: normal !important;
+}
+
+/* Tablet and desktop: keep the app centered as a mobile/kiosk panel. */
+@media (min-width: 821px) {
+  body.kiosk-body {
+    padding: 24px 0;
+  }
+
+  .kiosk-viewport .frame,
+  .frame {
+    min-height: calc(100dvh - 48px);
+    border-radius: 28px !important;
+    overflow: hidden !important;
+    box-shadow: 0 24px 70px rgba(0, 0, 0, .38) !important;
+  }
+
+  .zone {
+    min-height: calc(100dvh - 48px) !important;
+  }
+}
+
+/* Very narrow phones: stack items that would otherwise become cramped. */
+@media (max-width: 480px) {
+  :root {
+    --page-pad: 16px;
+    --section-gap: clamp(18px, 3.5vh, 34px);
+  }
+
+  .header {
+    align-items: flex-start !important;
+  }
+
+  .grid-row {
+    grid-template-columns: 1fr;
+  }
+
+  .dest-card {
+    min-height: 155px;
+  }
+
+  .help-row {
+    flex-direction: column;
+  }
+
+  .cta-card,
+  .action-card {
+    align-items: flex-start;
+  }
+}
+
+/* Landscape phones: permit scrolling and reduce large decorative elements. */
+@media (max-height: 600px) and (orientation: landscape) {
+  :root {
+    --section-gap: 18px;
+  }
+
+  .robot-face {
+    width: 120px !important;
+    height: 120px !important;
+  }
+
+  .viewfinder,
+  .manual-align-stage {
+    max-height: none;
+    width: min(68vw, 500px) !important;
+  }
+}

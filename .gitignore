@@ -1,0 +1,34 @@
+# ===== ROS2 / colcon =====
+build/
+install/
+log/
+
+# ===== Python =====
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+.venv/
+venv/
+env/
+
+# ===== 모델 가중치 / 대용량 (릴리스나 다운로드 스크립트로 배포) =====
+*.pt
+*.pth
+*.onnx
+*.engine
+
+# ===== 데이터베이스 / 런타임 산출물 =====
+*.db
+*.sqlite
+*.sqlite3
+
+# ===== IDE / OS =====
+.vscode/
+.idea/
+.DS_Store
+*.swp
+
+# ===== 로그/캡처 =====
+*.log
+captures/

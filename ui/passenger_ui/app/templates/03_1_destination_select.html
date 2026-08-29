@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>AURA · 목적지 선택</title>
+<style>
+  * { box-sizing: border-box; margin:0; padding:0; }
+  body { font-family:'Inter',-apple-system,sans-serif; }
+  html, body { height:100%; margin:0; }
+  body.kiosk-body { overflow:hidden; background:#1B1E27; display:flex; align-items:center; justify-content:center; }
+  .kiosk-viewport { width:100vw; height:100vh; display:flex; align-items:center; justify-content:center; }
+  .kiosk-viewport .frame { transform-origin:center center; border-radius:28px; overflow:hidden; box-shadow:0 30px 90px rgba(0,0,0,0.5); }
+  .frame { width:1080px; }
+  .zone { width:1080px; height:3240px; display:flex; flex-direction:column; align-items:center; background:linear-gradient(180deg, #FFFFFF 0%, #EBF5F7 100%); }
+  .header { width:100%; display:flex; gap:18px; align-items:center; padding:48px 56px 0; }
+  .icon-btn { width:50px; height:50px; border-radius:50%; background:#fff; border:1.5px solid #D9E0ED; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:22px; color:#262E40; text-decoration:none; flex-shrink:0; }
+  .title-block { display:flex; flex-direction:column; gap:4px; }
+  .title-block h1 { font-size:26px; font-weight:700; color:#1A1F2E; white-space:nowrap; }
+  .title-block p { font-size:15px; color:#738099; white-space:nowrap; }
+  .grid { display:flex; flex-direction:column; gap:20px; padding:0 56px; }
+  .grid-row { display:flex; gap:20px; }
+  .dest-card { width:456px; height:320px; border-radius:28px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; text-decoration:none; }
+  .dest-card.active.teal { background:linear-gradient(90deg,#01AAB4,#33C7CC); }
+  .dest-card.active.orange { background:linear-gradient(90deg,#F59F19,#FCBA4D); }
+  .dest-card.disabled { background:#EDF0F5; }
+  .dest-icon { width:96px; height:96px; border-radius:24px; display:flex; align-items:center; justify-content:center; font-size:44px; }
+  .dest-card.active .dest-icon { background:rgba(255,255,255,0.22); }
+  .dest-card.disabled .dest-icon { background:rgba(255,255,255,0.7); }
+  .dest-card h3 { font-size:22px; font-weight:700; }
+  .dest-card.active h3 { color:#fff; }
+  .dest-card.disabled h3 { color:#8C94A3; }
+  .dest-tag { padding:6px 14px; border-radius:999px; font-size:13px; }
+  .dest-card.active .dest-tag { background:rgba(255,255,255,0.22); color:#fff; }
+  .dest-card.disabled .dest-tag { background:#D9DBE3; color:#8C94A3; }
+  .mic-btn { width:160px; height:160px; border-radius:50%; background:#fff; border:1.5px solid #D9E0ED; display:flex; align-items:center; justify-content:center; }
+  .help-row { width:100%; display:flex; gap:16px; padding:0 56px 24px; }
+  .ghost { flex:1; padding:16px 22px; border-radius:999px; background:#fff; border:1.5px solid #D1D9E5; text-align:center; font-size:14px; font-weight:600; color:#596680; text-decoration:none; }
+  .ghost.danger { border-color:#F08C8C; color:#D94040; }
+</style>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/responsive.css') }}">
+</head>
+<body class="kiosk-body"
+ data-timeout-seconds="{{ inactivity_timeout_seconds }}"
+ data-timeout-url="{{ url_for('passenger.inactivity_timeout') }}"
+ data-system-state-url="{{ url_for('api.system_state') }}">
+<div class="kiosk-viewport">
+<div class="frame">
+  <div class="zone" style="gap:347px;">
+    <div class="header">
+      <a href="{{ url_for('passenger.service_selection') }}" class="icon-btn">←</a>
+      <div class="title-block">
+        <h1>목적지를 선택해주세요</h1>
+        <p>선택하시면 로봇이 안내를 시작합니다</p>
+      </div>
+    </div>
+    <div class="grid">
+      {% for row in destinations.items()|batch(2) %}
+      <div class="grid-row">
+        {% for item in row %}
+          {% set key = item[0] %}
+          {% set destination = item[1] %}
+          {% if destination.enabled %}
+          <a href="{{ url_for('passenger.prepare_guide', dest_key=key) }}" class="dest-card active {{ destination.theme }}">
+            <div class="dest-icon">{{ destination.icon }}</div><h3>{{ destination.label }}</h3><div class="dest-tag">이용 가능</div>
+          </a>
+          {% else %}
+          <div class="dest-card disabled">
+            <div class="dest-icon">{{ destination.icon }}</div><h3>{{ destination.label }}</h3><div class="dest-tag">준비 중</div>
+          </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+      {% endfor %}
+    </div>
+    <div class="mic-btn" aria-hidden="true">
+      <svg width="70" height="70" viewBox="0 0 28 28" fill="none">
+        <rect x="8" y="0" width="12" height="16" rx="6" fill="#293042"/>
+        <path d="M 3 22 A 11 11 0 0 1 25 22" stroke="#293042" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+        <rect x="12.8" y="21" width="2.4" height="6" fill="#293042"/>
+        <rect x="7" y="25.5" width="14" height="2.4" rx="1.2" fill="#293042"/>
+      </svg>
+    </div>
+    <div class="help-row">
+      <div class="ghost">❔ 도움 요청</div>
+      <div class="ghost danger">🚨 관리자 호출</div>
+    </div>
+  </div>
+</div>
+</div>
+<script>
+  function fitKiosk() {
+    const el = document.querySelector('.frame');
+    const scale = Math.min(window.innerWidth / 1080, window.innerHeight / 3240) * 0.94;
+    el.style.transform = `scale(${scale})`;
+  }
+  window.addEventListener('resize', fitKiosk);
+  fitKiosk();
+</script>
+<script src="{{ url_for('static', filename='js/inactivity.js') }}"></script>
+<script src="{{ url_for('static', filename='js/emergency_watch.js') }}"></script>
+{% include '_debug_home_button.html' %}
+</body>
+</html>

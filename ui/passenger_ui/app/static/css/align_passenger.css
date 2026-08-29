@@ -1,0 +1,118 @@
+.align-zone { gap: 232px; }
+.header { width:100%; display:flex; gap:18px; align-items:center; padding:48px 56px 0; }
+.title-block { display:flex; flex-direction:column; gap:4px; }
+.title-block h1 { font-size:26px; font-weight:700; color:#1A1F2E; white-space:nowrap; }
+.title-block p { font-size:14px; color:#738099; white-space:nowrap; }
+.vf-group { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:24px; }
+.viewfinder { position:relative; width:560px; height:1211px; border-radius:28px; background:#0B0E16; overflow:hidden; box-shadow:0 20px 50px rgba(0,0,0,.25); }
+.retry-viewfinder { box-shadow:0 20px 50px rgba(217,64,64,.22); }
+.camera-image { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:1; visibility:hidden; }
+.camera-placeholder { position:absolute; inset:0; z-index:2; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:18px; color:#B5C2DA; background:#0B0E16; font-size:22px; font-weight:600; }
+.spinner { width:56px; height:56px; border:6px solid rgba(181,194,218,.24); border-top-color:#B5C2DA; border-radius:50%; animation:spin 1s linear infinite; }
+@keyframes spin { to { transform:rotate(360deg); } }
+.overlay { position:absolute; inset:0; z-index:3; pointer-events:none; }
+.vf-v { position:absolute; left:280px; top:0; width:1px; height:100%; background:rgba(255,255,255,.18); }
+.vf-h { position:absolute; left:0; top:605px; width:560px; height:1px; background:rgba(255,255,255,.12); }
+.vf-bbox { position:absolute; left:165px; top:170px; width:230px; height:720px; border:4px dashed #F0B84B; border-radius:28px; transition:.2s ease; }
+.vf-bbox.leg-box { top:480px; height:500px; }
+.vf-label { position:absolute; left:165px; top:126px; background:rgba(245,159,25,.22); padding:7px 14px; border-radius:8px; color:#FFD58F; font-size:16px; font-weight:700; white-space:nowrap; }
+.vf-status-pill { position:absolute; left:185px; bottom:70px; display:flex; align-items:center; gap:8px; background:rgba(245,159,25,.18); border:1px solid #F59F19; padding:12px 20px; border-radius:999px; white-space:nowrap; }
+.vf-status-pill.warning { background:rgba(217,64,64,.18); border-color:#D94040; }
+.vf-dot { width:11px; height:11px; border-radius:50%; background:#F59F19; }
+.vf-status-text { color:#FFD58F; font-size:17px; font-weight:600; }
+.overlay.detected .vf-bbox { border-style:solid; border-color:#4CD98C; }
+.overlay.detected .vf-label { background:rgba(76,217,140,.20); color:#8CF2B3; }
+.overlay.detected .vf-status-pill { background:rgba(76,217,140,.16); border-color:#4CD98C; }
+.overlay.detected .vf-dot { background:#4CD98C; }
+.overlay.detected .vf-status-text { color:#8CF2B3; }
+.vf-caption { display:flex; flex-direction:column; align-items:center; gap:8px; text-align:center; }
+.vf-caption h2 { font-size:26px; font-weight:700; color:#1A1F2E; white-space:nowrap; }
+.vf-caption p { font-size:16px; color:#738099; white-space:nowrap; }
+.footer { width:100%; display:flex; flex-direction:column; gap:16px; padding:0 56px 24px; }
+.primary-btn, .retry-btn { width:100%; display:flex; align-items:center; justify-content:center; padding:22px 0; border-radius:999px; color:#fff; font-size:40px; font-weight:700; white-space:nowrap; cursor:pointer; }
+.primary-btn { background:linear-gradient(90deg,#01AAB4,#33C7CC); }
+.primary-btn:disabled { background:#B9C5D2; color:#EEF2F5; cursor:not-allowed; }
+.retry-btn { background:linear-gradient(90deg,#D94040,#ED594D); }
+.hidden { display:none !important; }
+
+/* AMR1 수동 정렬 화면: 카메라 대신 승객 준비 상태를 안내한다. */
+.manual-align-stage {
+  position:relative;
+  width:560px;
+  height:1211px;
+  border-radius:28px;
+  background:linear-gradient(180deg,#14203A 0%,#0B0E16 100%);
+  overflow:hidden;
+  box-shadow:0 20px 50px rgba(0,0,0,.25);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:58px;
+}
+.manual-robot {
+  width:270px;
+  height:270px;
+  border-radius:50%;
+  padding:10px;
+  background:linear-gradient(135deg,#01AAB4,#5786C3,#F59F19);
+}
+.manual-robot-inner {
+  width:100%;
+  height:100%;
+  border-radius:50%;
+  background:#12172E;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:24px;
+}
+.manual-eye {
+  width:48px;
+  height:48px;
+  border:7px solid #fff;
+  border-radius:50%;
+}
+.manual-person {
+  position:relative;
+  width:210px;
+  height:350px;
+}
+.manual-person::before {
+  content:"";
+  position:absolute;
+  left:65px;
+  top:0;
+  width:80px;
+  height:80px;
+  border-radius:50%;
+  background:#7FE0E4;
+}
+.manual-person::after {
+  content:"";
+  position:absolute;
+  left:25px;
+  top:95px;
+  width:160px;
+  height:250px;
+  border-radius:80px 80px 36px 36px;
+  background:rgba(127,224,228,.34);
+  border:4px solid #7FE0E4;
+}
+.manual-center-line {
+  position:absolute;
+  left:50%;
+  top:0;
+  width:2px;
+  height:100%;
+  background:rgba(255,255,255,.12);
+}
+.manual-ready-pill {
+  padding:14px 26px;
+  border-radius:999px;
+  border:1px solid #4CD98C;
+  background:rgba(76,217,140,.16);
+  color:#8CF2B3;
+  font-size:20px;
+  font-weight:700;
+}

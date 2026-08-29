@@ -1,0 +1,23 @@
+.standby-zone { gap: 403px; }
+.header { width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 48px 56px 20px; }
+.logo { font-weight: 700; font-size: 28px; color: #1A1F2E; }
+.lang-row { display: flex; gap: 8px; }
+.pill { padding: 8px 14px; border-radius: 999px; font-size: 14px; font-weight: 600; background: #EDF2F5; color: #667080; }
+.pill.active { background: #5786C3; color: #fff; }
+.status-block { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 24px; padding: 8px 0 20px; }
+.status-title { font-weight: 700; font-size: 40px; color: #5786C3; }
+.touch-prompt {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 20px 40px;
+  border-radius: 999px;
+  background: #F0F7F7;
+  border: 1.5px solid rgba(1, 170, 180, 0.4);
+  white-space: nowrap;
+  cursor: pointer;
+}
+.touch-prompt .emoji { font-size: 22px; }
+.touch-prompt .txt { font-size: 64px; font-weight: 700; color: #5786C3; }
+.standby-help { padding-top: 28px; }

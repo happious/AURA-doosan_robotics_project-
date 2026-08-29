@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>AURA · 정렬 확인 (길안내)</title>
+<style>
+  * { box-sizing: border-box; margin:0; padding:0; }
+  body { font-family:'Inter',-apple-system,sans-serif; }
+  html, body { height:100%; margin:0; }
+  body.kiosk-body { overflow:hidden; background:#1B1E27; display:flex; align-items:center; justify-content:center; }
+  .kiosk-viewport { width:100vw; height:100vh; display:flex; align-items:center; justify-content:center; }
+  .kiosk-viewport .frame { transform-origin:center center; border-radius:28px; overflow:hidden; box-shadow:0 30px 90px rgba(0,0,0,0.5); }
+  .frame { width:1080px; }
+  .zone { width:1080px; height:3240px; display:flex; flex-direction:column; align-items:center; background:linear-gradient(180deg, #FFFFFF 0%, #EBF5F7 100%); }
+  .header { width:100%; display:flex; gap:18px; align-items:center; padding:48px 56px 0; }
+  .icon-btn { width:50px; height:50px; border-radius:50%; background:#fff; border:1.5px solid #D9E0ED; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:22px; color:#262E40; text-decoration:none; flex-shrink:0; }
+  .title-block { display:flex; flex-direction:column; gap:4px; }
+  .title-block h1 { font-size:26px; font-weight:700; color:#1A1F2E; white-space:nowrap; }
+  .title-block p { font-size:14px; color:#738099; white-space:nowrap; }
+  .vf-group { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:24px; }
+  .viewfinder { position:relative; width:560px; height:1211px; border-radius:28px; background:#0B0E16; overflow:hidden; box-shadow:0 20px 50px rgba(0,0,0,0.25); }
+  .vf-v { position:absolute; left:280px; top:0; width:1px; height:760px; background:rgba(255,255,255,0.18); }
+  .vf-h { position:absolute; left:0; top:380px; width:560px; height:1px; background:rgba(255,255,255,0.12); }
+  .vf-bracket { position:absolute; background:rgba(255,255,255,0.35); }
+  .vf-silhouette-body { position:absolute; left:190px; top:240px; width:180px; height:300px; border-radius:90px; background:#2A3242; }
+  .vf-silhouette-head { position:absolute; left:238px; top:165px; width:84px; height:84px; border-radius:50%; background:#2A3242; }
+  .vf-bbox { position:absolute; left:165px; top:130px; width:230px; height:480px; border:3px solid #4CD98C; border-radius:10px; }
+  .vf-label { position:absolute; left:165px; top:104px; background:rgba(76,217,140,0.15); padding:4px 10px; border-radius:6px; color:#4CD98C; font-size:13px; font-weight:600; white-space:nowrap; }
+  .vf-status-pill { position:absolute; left:210px; top:696px; display:flex; align-items:center; gap:8px; background:rgba(76,217,140,0.16); border:1px solid #4CD98C; padding:10px 20px; border-radius:999px; white-space:nowrap; }
+  .vf-dot { width:9px; height:9px; border-radius:50%; background:#4CD98C; }
+  .vf-status-text { color:#8CF2B3; font-size:15px; font-weight:600; }
+  .vf-caption { display:flex; flex-direction:column; align-items:center; gap:8px; text-align:center; }
+  .vf-caption h2 { font-size:26px; font-weight:700; color:#1A1F2E; white-space:nowrap; }
+  .vf-caption p { font-size:16px; color:#738099; white-space:nowrap; }
+  .footer { width:100%; display:flex; flex-direction:column; gap:16px; padding:0 56px 24px; }
+  .primary-btn { display:flex; align-items:center; justify-content:center; padding:22px 0; border-radius:999px; background:linear-gradient(90deg,#01AAB4,#33C7CC); color:#fff; font-size:40px; font-weight:700; text-decoration:none; white-space:nowrap; }
+  .help-row { display:flex; gap:16px; }
+  .ghost { flex:1; padding:16px 22px; border-radius:999px; background:#fff; border:1.5px solid #D1D9E5; text-align:center; font-size:14px; font-weight:600; color:#596680; text-decoration:none; }
+  .ghost.danger { border-color:#F08C8C; color:#D94040; }
+  .overlay { position:absolute; inset:0; }
+  .full-form { width:100%; margin:0; }
+  button.primary-btn { width:100%; border:none; cursor:pointer; }
+  button.primary-btn:disabled { opacity:0.55; cursor:not-allowed; }
+  .hidden { display:none !important; }
+</style>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/responsive.css') }}">
+</head>
+<body class="kiosk-body"
+ data-is-retry="false"
+ data-prealign="{{ 'true' if prealign else 'false' }}"
+ data-auto-confirm="{{ 'true' if guide_turn_flow else 'false' }}"
+ data-alignment-state-url="{{ url_for('api.alignment_state') }}"
+ data-confirm-url="{{ url_for('passenger.confirm_alignment') }}"
+ data-retry-url="{{ url_for('passenger.align_guide_retry') }}"
+ data-system-state-url="{{ url_for('api.system_state') }}">
+<div class="kiosk-viewport">
+<div class="frame">
+  <div class="zone" style="gap:232px;">
+    <div class="header">
+      <a href="{{ url_for('passenger.destination_select') }}" class="icon-btn">←</a>
+      <div class="title-block">
+        {% if manual_alignment %}
+        <h1>중앙에 정렬해주세요</h1>
+        <p>로봇 뒤에서 따라갈 준비가 끝나면 정렬 완료를 눌러주세요</p>
+        {% elif prealign %}
+        <h1>중앙에 정렬해주세요</h1>
+        <p>정렬 완료를 누르면 로봇이 회전하고 후방 인식을 시작합니다</p>
+        {% else %}
+        <h1>후방 승객 인식 중입니다</h1>
+        <p>로봇이 180도 회전한 뒤 승객을 확인하고 있습니다</p>
+        {% endif %}
+      </div>
+    </div>
+    <div class="vf-group">
+      <div class="viewfinder">
+        {% if manual_alignment or prealign %}
+        <div class="vf-v"></div>
+        <div class="vf-h"></div>
+        <div class="vf-bracket" style="left:24px; top:24px; width:36px; height:3px;"></div>
+        <div class="vf-bracket" style="left:24px; top:24px; width:3px; height:36px;"></div>
+        <div class="vf-bracket" style="left:500px; top:24px; width:36px; height:3px;"></div>
+        <div class="vf-bracket" style="left:533px; top:24px; width:3px; height:36px;"></div>
+        <div class="vf-bracket" style="left:24px; top:733px; width:36px; height:3px;"></div>
+        <div class="vf-bracket" style="left:24px; top:700px; width:3px; height:36px;"></div>
+        <div class="vf-bracket" style="left:500px; top:733px; width:36px; height:3px;"></div>
+        <div class="vf-bracket" style="left:533px; top:700px; width:3px; height:36px;"></div>
+        <div class="vf-silhouette-body"></div>
+        <div class="vf-silhouette-head"></div>
+        <div class="vf-bbox"></div>
+        <div class="vf-label">person · front alignment</div>
+        <div class="vf-status-pill"><div class="vf-dot"></div><div class="vf-status-text">정렬 준비</div></div>
+        {% else %}
+        <div class="overlay">
+        <div class="vf-v"></div>
+        <div class="vf-h"></div>
+        <div class="vf-bracket" style="left:24px; top:24px; width:36px; height:3px;"></div>
+        <div class="vf-bracket" style="left:24px; top:24px; width:3px; height:36px;"></div>
+        <div class="vf-bracket" style="left:500px; top:24px; width:36px; height:3px;"></div>
+        <div class="vf-bracket" style="left:533px; top:24px; width:3px; height:36px;"></div>
+        <div class="vf-bracket" style="left:24px; top:733px; width:36px; height:3px;"></div>
+        <div class="vf-bracket" style="left:24px; top:700px; width:3px; height:36px;"></div>
+        <div class="vf-bracket" style="left:500px; top:733px; width:36px; height:3px;"></div>
+        <div class="vf-bracket" style="left:533px; top:700px; width:3px; height:36px;"></div>
+          <div class="vf-bbox"></div>
+          <div id="detectionLabel" class="vf-label">/tracking_web · 0</div>
+          <div id="statusPill" class="vf-status-pill"><div class="vf-dot"></div><div id="statusText" class="vf-status-text">승객 추적 대기 중</div></div>
+        </div>
+        {% endif %}
+      </div>
+      <div class="vf-caption">
+        {% if manual_alignment or prealign %}
+        <h2 id="captionTitle">로봇을 정면으로 봐주세요</h2>
+        <p id="captionText">정렬 완료 버튼을 누르면 후방 승객 인식을 시작합니다</p>
+        {% else %}
+        <h2 id="captionTitle">후방 승객 확인 중입니다</h2>
+        <p id="captionText">{{ destination_label }} 안내를 위해 승객을 추적하고 있습니다</p>
+        {% endif %}
+      </div>
+    </div>
+    <div class="footer">
+      <!-- topic: /aura/align_confirm  mode: guide -->
+      {% if manual_alignment %}
+      <a id="alignDoneBtn" href="{{ url_for('passenger.confirm_alignment') }}" class="primary-btn">정렬 완료</a>
+      {% elif prealign %}
+      <form id="turnAroundForm" method="POST" action="{{ url_for('passenger.turn_guide_to_rear_camera') }}" class="full-form">
+        <input type="hidden" name="retry_screen" value="0">
+        <button id="alignDoneBtn" type="submit" class="primary-btn">정렬 완료</button>
+      </form>
+      {% else %}
+      <form id="confirmForm" method="POST" action="{{ url_for('passenger.confirm_alignment') }}" class="full-form">
+        <button id="alignDoneBtn" type="submit" class="primary-btn" {% if not state.alignment_detected %}disabled{% endif %}>후방 승객 인식 중</button>
+      </form>
+      {% endif %}
+      <a id="retryForm" href="{{ url_for('passenger.restart_alignment') }}" class="primary-btn hidden">다시 인식하기</a>
+      <div class="help-row">
+        <div class="ghost">❔ 도움 요청</div>
+        <div class="ghost danger">🚨 관리자 호출</div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+<script>
+  function fitKiosk() {
+    const el = document.querySelector('.frame');
+    const scale = Math.min(window.innerWidth / 1080, window.innerHeight / 3240) * 0.94;
+    el.style.transform = `scale(${scale})`;
+  }
+  window.addEventListener('resize', fitKiosk);
+  fitKiosk();
+</script>
+{% if not manual_alignment %}<script src="{{ url_for('static', filename='js/alignment_watch.js', v='19_frame_threshold') }}"></script>{% endif %}
+<script src="{{ url_for('static', filename='js/emergency_watch.js') }}"></script>
+{% include '_debug_home_button.html' %}
+</body>
+</html>

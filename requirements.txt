@@ -1,0 +1,30 @@
+# =====================================================================
+# AURA - Python(pip) 의존성 (루트 통합본)
+# =====================================================================
+# 아래 패키지는 rosdep/apt가 아니라 pip로 설치합니다.
+# rclpy, std_msgs, geometry_msgs, sensor_msgs, nav2_msgs, tf2_ros,
+# message_filters 등 ROS2 메시지/런타임 패키지는 apt(ros-humble-*)로
+# 제공되므로 이 파일에 넣지 않습니다.
+#
+#   pip install -r requirements.txt
+#
+# GPU 사용 시 torch는 https://pytorch.org 의 CUDA 빌드 안내를 따르세요.
+# ---------------------------------------------------------------------
+
+# --- 공통 비전 ---
+numpy<2.0
+opencv-python>=4.8
+
+# --- YOLO11-pose (cctv_perception, robot3_control) ---
+ultralytics>=8.3.0
+
+# --- robot3 후방 카메라 단안 깊이 추정 (guide_rear_tracker_node) ---
+# UniDepthV2를 사용합니다. third_party/UniDepth 서브모듈을 editable로 설치하세요:
+#   git submodule update --init --recursive
+#   pip install -e third_party/UniDepth
+torch>=2.0
+torchvision>=0.15
+packaging>=21.0
+
+# --- Flask UI (admin_ui, passenger_ui) ---
+Flask>=3.0,<4.0

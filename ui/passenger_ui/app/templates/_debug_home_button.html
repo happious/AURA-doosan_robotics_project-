@@ -1,0 +1,36 @@
+<style>
+  .aura-debug-home-form {
+    position: fixed;
+    left: max(14px, env(safe-area-inset-left));
+    bottom: max(14px, env(safe-area-inset-bottom));
+    z-index: 10000;
+    margin: 0;
+  }
+  .aura-debug-home-btn {
+    min-width: 112px;
+    min-height: 46px;
+    padding: 10px 16px;
+    border: 1px solid rgba(255,255,255,0.38);
+    border-radius: 14px;
+    background: rgba(15, 23, 42, 0.82);
+    color: #fff;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: clamp(12px, 1.6vw, 16px);
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.24);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    cursor: pointer;
+    opacity: 0.78;
+    touch-action: manipulation;
+  }
+  .aura-debug-home-btn:active {
+    transform: translateY(1px);
+    opacity: 1;
+  }
+</style>
+<form class="aura-debug-home-form" method="POST" action="{{ url_for('passenger.debug_home') }}">
+  <button class="aura-debug-home-btn" type="submit" aria-label="디버그 최초 화면으로 이동">↩ 최초 화면</button>
+</form>

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>AURA · 대기 화면</title>
+<style>
+  * { box-sizing: border-box; margin:0; padding:0; }
+  body { font-family:'Inter',-apple-system,sans-serif; }
+  html, body { height:100%; margin:0; }
+  body.kiosk-body { overflow:hidden; background:#1B1E27; display:flex; align-items:center; justify-content:center; }
+  .kiosk-viewport { width:100vw; height:100vh; display:flex; align-items:center; justify-content:center; }
+  .kiosk-viewport .frame { transform-origin:center center; border-radius:28px; overflow:hidden; box-shadow:0 30px 90px rgba(0,0,0,0.5); }
+  .frame { width:1080px; }
+  .zone { width:1080px; height:3240px; display:flex; flex-direction:column; align-items:center; background:linear-gradient(180deg, #FFFFFF 0%, #EBF5F7 100%); }
+  .header { width:100%; display:flex; justify-content:space-between; align-items:center; padding:48px 56px 20px; }
+  .logo { font-weight:700; font-size:28px; color:#1A1F2E; }
+  .lang-row { display:flex; gap:8px; }
+  .pill { padding:8px 14px; border-radius:999px; font-size:14px; font-weight:600; background:#EDF2F5; color:#667080; }
+  .pill.active { background:#5786C3; color:#fff; }
+  .status-block { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:24px; padding:8px 0 20px; }
+  .robot-face { width:340px; height:340px; border-radius:50%; padding:12px; background:linear-gradient(135deg,#01AAB4,#5786C3,#F59F19); }
+  .robot-face-inner { width:100%; height:100%; border-radius:50%; background:#12172E; display:flex; align-items:center; justify-content:center; gap:24px; }
+  .eye { width:54px; height:54px; border:7px solid #fff; border-radius:50%; }
+  .status-title { font-weight:700; font-size:40px; color:#5786C3; }
+  .badge-row { display:flex; gap:8px; }
+  .badge { padding:6px 12px; border-radius:999px; font-size:13px; font-weight:500; background:#E5F5F5; color:#007378; }
+  .touch-prompt { display:flex; align-items:center; justify-content:center; gap:10px; padding:20px 40px; border-radius:999px; background:#F0F7F7; border:1.5px solid rgba(1,170,180,0.4); text-decoration:none; white-space:nowrap; }
+  .touch-prompt .emoji { font-size:22px; }
+  .touch-prompt .txt { font-size:64px; font-weight:700; color:#5786C3; }
+  .help-row { width:100%; display:flex; gap:16px; padding:28px 56px 0; }
+  .ghost { flex:1; padding:16px 22px; border-radius:999px; background:#fff; border:1.5px solid #D1D9E5; text-align:center; font-size:14px; font-weight:600; color:#596680; text-decoration:none; }
+  .ghost.danger { border-color:#F08C8C; color:#D94040; }
+</style>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/responsive.css') }}">
+</head>
+<body class="kiosk-body" data-system-state-url="{{ url_for('api.system_state') }}">
+<div class="kiosk-viewport">
+<div class="frame">
+  <div class="zone" style="gap:403px;">
+    <div class="header">
+      <div class="logo">AURA</div>
+      <div class="lang-row">
+        <div class="pill active">KR</div><div class="pill">EN</div><div class="pill">中</div><div class="pill">日</div>
+      </div>
+    </div>
+    <div class="status-block">
+      <div class="robot-face"><div class="robot-face-inner"><div class="eye"></div><div class="eye"></div></div></div>
+      <div class="status-title">대기 중입니다</div>
+      <div class="badge-row"><div class="badge">🔋 92%</div><div class="badge">🟢 온라인</div></div>
+    </div>
+    <!-- topic: none (idle) — tap anywhere on prompt transitions UI state only, no ROS topic fired -->
+    <a href="{{ url_for('passenger.start') }}" class="touch-prompt">
+      <span class="emoji">👋</span><span class="txt">화면을 터치해서 시작하세요</span>
+    </a>
+    <div class="help-row">
+      <div class="ghost">❔ 도움 요청</div>
+      <div class="ghost danger">🚨 관리자 호출</div>
+    </div>
+  </div>
+</div>
+</div>
+<script>
+  function fitKiosk() {
+    const el = document.querySelector('.frame');
+    const scale = Math.min(window.innerWidth / 1080, window.innerHeight / 3240) * 0.94;
+    el.style.transform = `scale(${scale})`;
+  }
+  window.addEventListener('resize', fitKiosk);
+  fitKiosk();
+</script>
+<script src="{{ url_for('static', filename='js/emergency_watch.js') }}"></script>
+{% include '_debug_home_button.html' %}
+</body>
+</html>
