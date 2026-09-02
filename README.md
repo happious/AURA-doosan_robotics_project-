@@ -1,109 +1,526 @@
-# AURA — 공항형 협동 AMR 시스템
+<div align="center">
 
-TurtleBot4 2대(**robot1**, **robot3**)를 중앙 노드로 조율하여 **가이드 · 러기지 어시스트 ·
-순찰 · 응급(AED) 대응**을 수행하는 ROS2 기반 협동 로봇 시스템. 고정 CCTV가 쓰러짐/혼잡/인원수를
-감지하고, 관리자·승객용 Flask UI가 분리되어 있다.
+# ✈️ AURA
 
-- **robot1** — 응급/AED 대응. 중앙과 액션·서비스로 **완전 연결**.
-- **robot3** — 가이드/러기지 어시스트. 로컬 인지·모션 노드로 동작하며 중앙과 **부분 연결**.
+### Airport Collaborative AMR Service Platform
 
-전체 구조와 토픽 연결은 [`docs/architecture.md`](docs/architecture.md),
-[`docs/topics.md`](docs/topics.md) 참고.
+**Multi-AMR · CCTV Perception · Fleet Management · Passenger Assistance**
+
+공항 환경에서 두 대의 TurtleBot4가 협업하여  
+**안내 · 러기지 어시스트 · 순찰 · 응급(AED) 대응**을 수행하는  
+ROS2 기반 협동 AMR 서비스 시스템
+
+<br>
+
+![ROS2](https://img.shields.io/badge/ROS2-Humble-22314E?logo=ros&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3.10-3776AB?logo=python&logoColor=white)
+![Ubuntu](https://img.shields.io/badge/Ubuntu-22.04-E95420?logo=ubuntu&logoColor=white)
+![Robot](https://img.shields.io/badge/Robot-TurtleBot4%20%C3%97%202-00A6A6)
+![Navigation](https://img.shields.io/badge/Navigation-Nav2-4A90E2)
+![Vision](https://img.shields.io/badge/Vision-YOLO11-111F68)
+![Flask](https://img.shields.io/badge/UI-Flask-000000?logo=flask&logoColor=white)
+![SQLite](https://img.shields.io/badge/DB-SQLite-003B57?logo=sqlite&logoColor=white)
+
+<br>
+
+<!-- GIF를 추가한 뒤 아래 주석을 해제하세요. -->
+<!-- <img src="./assets/aura_demo.gif" width="850"> -->
+
+### 🎬 [전체 시연 영상 보기](./assets/aura_demo.mp4)
+
+</div>
 
 ---
 
-## 리포 구조
+## 📌 Project Overview
 
+**AURA**는 공항과 같은 다중 이용 시설에서 여러 AMR이 역할을 분담하여  
+승객 지원과 안전 관리 업무를 수행하도록 설계한 **ROS2 기반 협동 AMR 시스템**입니다.
+
+고정형 CCTV가 주변 환경을 관찰하여 **쓰러짐 · 혼잡 · 인원수**를 감지하고,  
+중앙 Fleet 시스템이 상황에 따라 로봇의 임무를 관리합니다.
+
+| Robot | 주요 역할 | 제어 구조 |
+|---|---|---|
+| 🤖 **robot1** | 응급 상황 대응 · AED 전달 | 중앙 Dispatcher와 Action / Service 기반 연동 |
+| 🤖 **robot3** | 승객 안내 · 러기지 어시스트 · 순찰 | Local Perception / Motion 기반 자율 동작 |
+
+관리자는 **Admin Dashboard**를 통해 시스템 전체를 관제하고,  
+승객은 각 AMR의 **Passenger UI**를 통해 서비스를 이용할 수 있습니다.
+
+---
+
+# ✨ Key Features
+
+## 🚨 1. Emergency / AED Response
+
+CCTV가 승객의 쓰러짐 상황을 감지하면 중앙 시스템으로 이벤트를 전달하고,  
+**robot1**이 응급 대응 임무를 수행합니다.
+
+```text
+CCTV
+  ↓
+Fall Detection
+  ↓
+Fleet Dispatcher
+  ↓
+robot1 Mission FSM
+  ↓
+Nav2 Navigation
+  ↓
+AED Emergency Response
 ```
+
+---
+
+## 🧳 2. Luggage Assist
+
+**robot3**는 전방 RGB-D 카메라를 이용하여 대상을 추적하고  
+승객의 러기지 이동을 보조합니다.
+
+```text
+Passenger Request
+       ↓
+RGB-D Tracking
+       ↓
+Target Position
+       ↓
+Luggage Follower
+       ↓
+Robot3 Motion
+```
+
+---
+
+## 🧭 3. Passenger Guide
+
+후방 카메라를 이용하여 안내 대상과의 거리를 추정하고,  
+승객이 로봇을 안정적으로 따라올 수 있도록 이동을 수행합니다.
+
+```text
+Rear Camera
+     ↓
+Guide Tracker
+     ↓
+Distance Estimation
+     ↓
+Guide Motion
+     ↓
+Robot3 Navigation
+```
+
+---
+
+## 👥 4. Crowd-aware Navigation
+
+CCTV에서 획득한 인원수 및 혼잡 정보를 이용하여  
+혼잡 구역을 Nav2 Costmap의 **Keepout 영역**으로 반영합니다.
+
+```text
+CCTV Population Detection
+          ↓
+Crowd / Hot Place
+          ↓
+Keepout Mask Generator
+          ↓
+Nav2 Costmap
+          ↓
+Route Planning
+```
+
+이를 통해 로봇이 사람이 많이 몰린 구역을 피해 이동할 수 있도록 구성했습니다.
+
+---
+
+## 🖥️ 5. Dual UI System
+
+사용 목적에 따라 관리자와 승객 UI를 분리했습니다.
+
+| UI | 대상 | 주요 기능 |
+|---|---|---|
+| **Admin UI** | 관리자 | CCTV · AMR 상태 · 미션 · DB 모니터링 |
+| **Passenger UI** | 승객 | AMR 서비스 선택 및 진행 상태 확인 |
+
+---
+
+# 🎬 Demo
+
+최종 프로젝트 동작 영상입니다.
+
+<div align="center">
+
+### ▶️ [AURA Final Demo](./assets/aura_demo.mp4)
+
+</div>
+
+GitHub README에서 바로 움직이는 시연 화면을 표시하려면  
+`assets/aura_demo.gif`를 추가한 뒤 README 상단의 GIF 태그 주석을 해제합니다.
+
+```html
+<p align="center">
+  <img src="./assets/aura_demo.gif" width="850">
+</p>
+```
+
+---
+
+# 🏗️ System Architecture
+
+```mermaid
+flowchart LR
+
+    CCTV[CCTV Perception]
+
+    subgraph CENTRAL[Central System]
+        DISPATCH[Fleet Dispatcher]
+        DB[(SQLite DB)]
+        KEEP[Crowd Keepout Mask]
+    end
+
+    subgraph R1[robot1]
+        FSM1[Mission FSM]
+        NAV1[Nav2]
+        AED[AED Response]
+    end
+
+    subgraph R3[robot3]
+        GUIDE[Guide Tracker]
+        LUG[Luggage Tracker]
+        PATROL[Patrol]
+        FSM3[Mission FSM]
+        NAV3[Nav2]
+    end
+
+    ADMIN[Admin UI]
+    PASSENGER[Passenger UI]
+
+    CCTV -->|Fall / Population| DISPATCH
+    CCTV --> KEEP
+
+    DISPATCH --> FSM1
+    DISPATCH -. Partial Integration .-> FSM3
+
+    FSM1 --> NAV1
+    NAV1 --> AED
+
+    GUIDE --> FSM3
+    LUG --> FSM3
+    PATROL --> FSM3
+    FSM3 --> NAV3
+
+    DISPATCH --> DB
+
+    DB --> ADMIN
+    CCTV --> ADMIN
+
+    PASSENGER --> FSM3
+```
+
+---
+
+# 🤖 AMR Role
+
+## robot1 — Emergency Robot
+
+robot1은 **응급 대응 및 AED 전달**을 담당합니다.
+
+### 주요 기능
+
+- 중앙 Fleet Dispatcher와 통신
+- Emergency Mission FSM
+- Nav2 기반 목표 위치 이동
+- AED 탑재 상태 관리
+- 임무 결과 중앙 시스템 보고
+
+```text
+Fleet Dispatcher
+      ↓
+Mission Request
+      ↓
+Robot1 FSM
+      ↓
+Navigate To Pose
+      ↓
+Emergency Location
+```
+
+---
+
+## robot3 — Passenger Assistance Robot
+
+robot3는 승객 지원 서비스를 담당합니다.
+
+### 주요 기능
+
+- 🧭 Passenger Guide
+- 🧳 Luggage Assist
+- 🚶 Patrol
+- 📍 Hot-place 이동
+- 📷 Camera-based Tracking
+
+Guide와 Luggage 기능은 각각  
+**Perception Node + Motion Node** 구조로 구성했습니다.
+
+---
+
+# 👁️ Perception System
+
+## CCTV Perception
+
+고정 CCTV를 통해 공항 공간의 상황을 모니터링합니다.
+
+### 주요 인지 정보
+
+- 사람 검출
+- 인원수 추정
+- 혼잡 구역 판단
+- 쓰러짐 감지
+- Hot-place 생성
+
+```text
+CCTV Image
+    ↓
+YOLO11 Pose
+    ↓
+Human Keypoints
+    ↓
+Fall / Population Analysis
+    ↓
+ROS2 Topic
+```
+
+---
+
+## Robot Camera Perception
+
+robot3의 승객 안내 및 러기지 추적에는  
+전방/후방 카메라를 활용합니다.
+
+### Rear Camera
+Guide 기능에서 승객과의 거리 및 위치 추적에 사용합니다.
+
+### RGB-D Camera
+Luggage Assist에서 목표 대상을 추적하는 데 사용합니다.
+
+### UniDepthV2
+단안 카메라 환경에서는 **UniDepthV2**를 활용하여  
+깊이 정보를 추정할 수 있도록 구성했습니다.
+
+---
+
+# 🧠 Fleet Management
+
+중앙 Fleet 계층은 여러 AMR의 상태와 임무를 관리합니다.
+
+## `fleet_dispatcher_node`
+
+- 응급 이벤트 수신
+- 로봇 상태 확인
+- 임무 배정
+- 이벤트 및 우선순위 처리
+
+## `db_manager_node`
+
+SQLite를 기반으로 시스템 데이터를 기록합니다.
+
+- AMR 상태
+- 이벤트
+- 임무 기록
+- 시스템 로그
+
+## `crowd_keepout_mask_node`
+
+CCTV에서 획득한 혼잡 정보를  
+Nav2 Costmap에서 사용할 수 있는 **Keepout Mask** 형태로 변환합니다.
+
+---
+
+# 🖥️ User Interface
+
+## Admin Dashboard
+
+관리자용 통합 관제 UI입니다.
+
+```text
+http://127.0.0.1:7000
+```
+
+### 주요 기능
+
+- CCTV 영상 확인
+- AMR 상태 모니터링
+- 미션 상태 확인
+- 이벤트 확인
+- SQLite 데이터 확인
+
+---
+
+## Passenger UI
+
+승객이 AMR 서비스를 사용할 수 있도록  
+각 로봇별 Passenger UI를 제공합니다.
+
+| AMR | Port |
+|---|---:|
+| **AMR1** | `5001` |
+| **AMR3** | `5003` |
+
+```text
+AMR1 → http://127.0.0.1:5001
+AMR3 → http://127.0.0.1:5003
+```
+
+---
+
+# 🗂️ Repository Structure
+
+```text
 aura_ws/
+│
 ├── src/
-│   ├── fleet_interfaces/     # 공용 msg/srv/action (ament_cmake)
-│   ├── fleet_central/        # 중앙: dispatcher · db_manager · crowd_keepout
-│   ├── robot1_control/       # robot1 미션 FSM (완전 연결)
-│   ├── robot3_control/       # robot3 로컬 자율 스택 (부분 연결)
-│   └── cctv_perception/      # CCTV 쓰러짐/혼잡/인원수 감지
+│   │
+│   ├── fleet_interfaces/
+│   │   └── ROS2 공용 msg / srv / action
+│   │
+│   ├── fleet_central/
+│   │   ├── fleet_dispatcher
+│   │   ├── db_manager
+│   │   └── crowd_keepout
+│   │
+│   ├── robot1_control/
+│   │   └── Emergency / AED Mission FSM
+│   │
+│   ├── robot3_control/
+│   │   ├── guide tracker
+│   │   ├── guide motion
+│   │   ├── luggage tracker
+│   │   ├── luggage follower
+│   │   ├── patrol
+│   │   └── mission FSM
+│   │
+│   └── cctv_perception/
+│       └── YOLO 기반 CCTV Perception
+│
 ├── ui/
-│   ├── admin_ui/             # 관제 대시보드 (Flask, 7000)
-│   └── passenger_ui/         # 승객 키오스크 (Flask, AMR1 5001 / AMR3 5003)
+│   ├── admin_ui/
+│   └── passenger_ui/
+│
 ├── third_party/
-│   └── UniDepth/             # git submodule (직접 커밋 안 함)
-├── maps/                     # 공용 Nav2 맵 (new_map.pgm/.yaml)
+│   └── UniDepth/
+│
+├── maps/
+│   └── new_map.yaml
+│
 ├── docs/
-├── requirements.txt          # pip 통합 의존성
-└── .gitignore
+│   ├── architecture.md
+│   └── topics.md
+│
+├── assets/
+│   ├── aura_demo.gif
+│   └── aura_demo.mp4
+│
+├── requirements.txt
+└── README.md
 ```
 
-`src/`는 colcon 빌드 대상(ROS2 패키지), `ui/`는 순수 Flask 앱이라 별도로 실행한다.
+---
+
+# 🛠️ Tech Stack
+
+| Category | Technology |
+|---|---|
+| OS | Ubuntu 22.04 |
+| Middleware | ROS2 Humble |
+| Language | Python 3.10 |
+| Mobile Robot | TurtleBot4 × 2 |
+| Navigation | Nav2 |
+| Vision | YOLO11 Pose |
+| Depth Estimation | UniDepthV2 |
+| Database | SQLite |
+| UI | Flask |
+| Camera | USB Camera / OAK-D / RGB-D |
+| Communication | ROS2 Topic / Service / Action |
+| Acceleration | NVIDIA CUDA *(optional)* |
 
 ---
 
-## 1. 사전 요구사항
+# ⚙️ Installation
 
-- **Ubuntu 22.04 + ROS2 Humble**
-- **TurtleBot4** 2대 + Nav2 스택 (bringup, localization, navigation)
-- **Python 3.10** (ROS2 Humble 기본)
-- CCTV/전방 카메라: USB 카메라 또는 OAK-D (robot3 러기지 추적용)
-- (선택) NVIDIA GPU + CUDA — YOLO/UniDepth 가속
-
----
-
-## 2. 설치
-
-### 2-1. 클론 + 서브모듈
+## 1. Clone Repository
 
 ```bash
 cd ~
+
 git clone --recurse-submodules <YOUR_REPO_URL> aura_ws
+
 cd aura_ws
-# 이미 클론했다면:
+```
+
+이미 Clone한 저장소라면:
+
+```bash
 git submodule update --init --recursive
 ```
 
-### 2-2. Python 의존성
+---
 
-가상환경 사용을 권장한다(ROS2와 함께 쓸 때는 `--system-site-packages`).
+## 2. Python Environment
+
+ROS2 패키지와 함께 사용하기 위해  
+`--system-site-packages` 옵션을 권장합니다.
 
 ```bash
 python3 -m venv .venv --system-site-packages
+
 source .venv/bin/activate
 
 pip install -r requirements.txt
-# robot3 후방 카메라 단안 깊이 추정용 UniDepthV2
+```
+
+UniDepth 설치:
+
+```bash
 pip install -e third_party/UniDepth
 ```
 
-> `numpy<2.0`으로 고정되어 있다. torch/ultralytics와의 호환을 위한 것이며,
-> GPU용 torch는 https://pytorch.org 의 CUDA 빌드 안내를 따르라.
+---
 
-### 2-3. ROS 의존성 (apt)
+## 3. ROS Dependencies
 
 ```bash
 sudo apt update
-rosdep install --from-paths src --ignore-src -r -y
-# 개별 설치가 필요하면 예:
-# sudo apt install ros-humble-nav2-msgs ros-humble-irobot-create-msgs \
-#                  ros-humble-message-filters ros-humble-tf2-ros
+
+rosdep install \
+    --from-paths src \
+    --ignore-src \
+    -r -y
 ```
 
-### 2-4. colcon 빌드
+---
 
-`fleet_interfaces`가 먼저 빌드되어야 나머지가 이를 참조할 수 있다. colcon이 의존성 순서를
-자동 계산하지만, 인터페이스만 먼저 빌드하면 확실하다.
+## 4. Build
+
+공용 Interface 패키지를 먼저 빌드합니다.
 
 ```bash
 cd ~/aura_ws
+
 source /opt/ros/humble/setup.bash
 
-# 1) 인터페이스 먼저
 colcon build --packages-select fleet_interfaces
-source install/setup.bash
 
-# 2) 나머지 전체
-colcon build --symlink-install
 source install/setup.bash
 ```
 
-이후 새 터미널마다:
+이후 전체 패키지를 빌드합니다.
+
+```bash
+colcon build --symlink-install
+
+source install/setup.bash
+```
+
+새 터미널에서는:
 
 ```bash
 source /opt/ros/humble/setup.bash
@@ -112,143 +529,286 @@ source ~/aura_ws/install/setup.bash
 
 ---
 
-## 3. 실행
+# ▶️ Run
 
-각 컴포넌트는 **별도 터미널**에서 실행한다(모든 터미널에서 위 `source` 2줄 먼저).
-아래는 권장 기동 순서다.
+각 구성 요소는 별도 터미널에서 실행합니다.
 
-### 0) 로봇 bringup + Nav2 (선행)
+## 0. TurtleBot4 + Nav2
 
-TurtleBot4 bringup, localization, Nav2를 각 로봇에 대해 먼저 올린다(맵: `maps/new_map.yaml`).
-이 부분은 로봇 팀의 bringup launch를 사용하며 본 리포 범위 밖이다. `/robot1/navigate_to_pose`,
-`/robot3/navigate_to_pose`가 떠 있어야 미션이 동작한다.
+두 로봇의 Bringup과 Nav2를 먼저 실행합니다.
 
-### 1) CCTV 인지
+다음 Action이 활성화되어 있어야 합니다.
+
+```text
+/robot1/navigate_to_pose
+/robot3/navigate_to_pose
+```
+
+---
+
+## 1. CCTV Perception
 
 ```bash
 ros2 run cctv_perception cctv_detector_node
 ```
 
-> YOLO11-pose 가중치(`yolo11x-pose.pt`)가 필요하다. 가중치는 저장소에 포함하지 않으므로
-> 작업 디렉터리에 두거나 노드 상단 `MODEL_PATH`를 수정한다. 카메라 인덱스는 `CAMERA_INDEX`.
+---
 
-### 2) 중앙 계층
+## 2. Fleet Central
+
+### Fleet Dispatcher
 
 ```bash
-# 배차 두뇌
 ros2 run fleet_central fleet_dispatcher_node
+```
 
-# SQLite 기록 (DB 경로 지정 가능)
-AURA_DB_PATH=$HOME/aura_data/amr_system.db ros2 run fleet_central db_manager_node
+### Database
 
-# 혼잡구역 keepout 코스트맵 마스크
+```bash
+AURA_DB_PATH=$HOME/aura_data/amr_system.db \
+ros2 run fleet_central db_manager_node
+```
+
+### Crowd Keepout
+
+```bash
 ros2 run fleet_central crowd_keepout_mask_node
 ```
 
-### 3) robot1 (응급/AED 대응)
+---
+
+## 3. robot1
 
 ```bash
 ros2 run robot1_control robot1_mission_fsm_node
 ```
 
-> AED 탑재 여부/네임스페이스가 파라미터화되어 있으면 예:
-> `ros2 run robot1_control robot1_mission_fsm_node --ros-args -p aed_loaded:=true`
-
-### 4) robot3 (가이드/러기지) — 로컬 스택
-
-robot3는 아래 노드들을 함께 띄운다.
+AED 탑재 여부를 설정하는 경우:
 
 ```bash
-# 가이드 (후방 카메라)
-ros2 run robot3_control guide_rear_tracker_node
-ros2 run robot3_control guide_motion_node
-
-# 러기지 어시스트 (전방 RGB-D 카메라)
-ros2 run robot3_control luggage_rgbd_tracker_node
-ros2 run robot3_control luggage_follower_node
-
-# 순찰 + hot_place 출동
-ros2 run robot3_control robot3_patrol_node
-
-# 미션 FSM (응급 선점/최종 접근)
-ros2 run robot3_control robot3_mission_fsm_node --ros-args -p aed_loaded:=false
+ros2 run robot1_control robot1_mission_fsm_node \
+    --ros-args \
+    -p aed_loaded:=true
 ```
 
-### 5) 관리자 UI (포트 7000)
+---
+
+## 4. robot3
+
+### Guide
+
+```bash
+ros2 run robot3_control guide_rear_tracker_node
+ros2 run robot3_control guide_motion_node
+```
+
+### Luggage Assist
+
+```bash
+ros2 run robot3_control luggage_rgbd_tracker_node
+ros2 run robot3_control luggage_follower_node
+```
+
+### Patrol
+
+```bash
+ros2 run robot3_control robot3_patrol_node
+```
+
+### Mission FSM
+
+```bash
+ros2 run robot3_control robot3_mission_fsm_node \
+    --ros-args \
+    -p aed_loaded:=false
+```
+
+---
+
+# 🖥️ Run UI
+
+## Admin UI
 
 ```bash
 cd ui/admin_ui
-pip install -r requirements.txt        # 최초 1회
+
+pip install -r requirements.txt
+
 bash run.sh
-# 접속: http://127.0.0.1:7000
 ```
 
-환경변수: `AURA_DB_PATH`(SQLite 경로), `AURA_ADMIN_CCTV_TOPIC`(기본 `/cctv/image_raw/compressed`),
-`AURA_ADMIN_PORT`(기본 7000). ROS가 없어도 DB 전용 모드로 뜬다.
+접속:
 
-### 6) 승객 UI (AMR1 5001 / AMR3 5003)
+```text
+http://127.0.0.1:7000
+```
+
+---
+
+## Passenger UI
 
 ```bash
 cd ui/passenger_ui
-pip install -r requirements.txt        # 최초 1회
 
-# 개별 실행
-python3 run_amr1.py     # AMR1 → robot1, http://127.0.0.1:5001
-python3 run_amr3.py     # AMR3 → robot3, http://127.0.0.1:5003
+pip install -r requirements.txt
+```
 
-# 둘 동시 실행
+AMR1:
+
+```bash
+python3 run_amr1.py
+```
+
+AMR3:
+
+```bash
+python3 run_amr3.py
+```
+
+둘을 동시에 실행:
+
+```bash
 python3 run_all_ui.py
 ```
 
-`launcher.py`가 ROS2 환경을 자동 source한다. rclpy를 못 찾으면 print-only 모드로 실행된다.
-
 ---
 
-## 4. 주요 환경변수
+# 🔧 Environment Variables
 
-| 변수 | 대상 | 기본값 | 설명 |
+| Variable | Target | Default | Description |
 |---|---|---|---|
-| `AURA_DB_PATH` | db_manager, admin_ui | `~/Downloads/data/amr_system.db` | SQLite 경로 |
-| `AURA_ADMIN_PORT` | admin_ui | `7000` | 관제 UI 포트 |
-| `AURA_ADMIN_CCTV_TOPIC` | admin_ui | `/cctv/image_raw/compressed` | CCTV 토픽 |
-| `AURA_ROBOT_ID` | passenger_ui | `AMR1` | `AMR1`/`AMR3` |
-| `AURA_PORT` | passenger_ui | `5001` | 승객 UI 포트 |
-| `AURA_ALIGNMENT_INPUT_MODE` | passenger_ui | — | `manual`/`tracking_int32` |
-
-승객 UI는 보통 `run_amr1.py`/`run_amr3.py`가 위 값을 자동 설정하므로 직접 만질 일은 적다.
+| `AURA_DB_PATH` | DB / Admin UI | `~/Downloads/data/amr_system.db` | SQLite DB |
+| `AURA_ADMIN_PORT` | Admin UI | `7000` | 관리자 UI Port |
+| `AURA_ADMIN_CCTV_TOPIC` | Admin UI | `/cctv/image_raw/compressed` | CCTV Topic |
+| `AURA_ROBOT_ID` | Passenger UI | `AMR1` | AMR 선택 |
+| `AURA_PORT` | Passenger UI | `5001` | UI Port |
+| `AURA_ALIGNMENT_INPUT_MODE` | Passenger UI | — | Alignment Mode |
 
 ---
 
-## 5. 기동 순서 체크리스트
+# ✅ Startup Checklist
 
-1. 두 로봇 bringup + Nav2 (`navigate_to_pose` 액션 확인)
-2. `cctv_detector_node`
-3. `fleet_dispatcher_node` → `db_manager_node` → `crowd_keepout_mask_node`
-4. `robot1_mission_fsm_node`
-5. robot3 노드 6종
-6. `admin_ui` → `passenger_ui`
+```text
+[1] TurtleBot4 Bringup + Nav2
+            ↓
+[2] CCTV Perception
+            ↓
+[3] Fleet Dispatcher / DB / Keepout
+            ↓
+[4] robot1 Mission FSM
+            ↓
+[5] robot3 Perception / Motion / FSM
+            ↓
+[6] Admin UI
+            ↓
+[7] Passenger UI
+```
 
-`ros2 topic list`로 `/fall_detection`, `/population`, `/robot1/status`,
-`/tracking_web`, `/tracking_rgbd`가 보이면 정상 연결이다.
+주요 토픽이 정상적으로 보이면 시스템 연결을 확인할 수 있습니다.
+
+```bash
+ros2 topic list
+```
+
+확인 대상 예시:
+
+```text
+/fall_detection
+/population
+/robot1/status
+/tracking_web
+/tracking_rgbd
+```
 
 ---
 
-## 6. 트러블슈팅
+# 🧯 Troubleshooting
 
-- **`Package 'fleet_interfaces' not found`** → 인터페이스를 먼저 빌드하고 `source install/setup.bash`
-  했는지 확인 (설치 2-4 참고).
-- **`ModuleNotFoundError: unidepth`** → `pip install -e third_party/UniDepth` 및
-  `git submodule update --init` 확인.
-- **YOLO 가중치 로드 실패** → `yolo11x-pose.pt`가 실행 위치에 있는지, 노드의 `MODEL_PATH` 확인.
-- **승객 UI가 print-only 모드** → 해당 터미널에서 ROS2 setup을 source 후 실행.
-- **admin UI에 CCTV가 안 뜸** → `cctv_detector_node`가 실행 중이고 `AURA_ADMIN_CCTV_TOPIC`이
-  일치하는지 확인.
-- **numpy 관련 에러** → `numpy<2.0` 준수 확인.
+### `Package 'fleet_interfaces' not found`
+
+```bash
+colcon build --packages-select fleet_interfaces
+source install/setup.bash
+```
 
 ---
 
-## 7. 라이선스 / 크레딧
+### `ModuleNotFoundError: unidepth`
 
-- `third_party/UniDepth`: 업스트림(https://github.com/lpiccinelli-eth/UniDepth) 라이선스를 따른다.
-- YOLO11: Ultralytics 라이선스를 따른다.
-- 본 프로젝트 코드 라이선스는 리포 정책에 맞게 지정하라(패키지 기본값 Apache-2.0).
+```bash
+git submodule update --init --recursive
+pip install -e third_party/UniDepth
+```
+
+---
+
+### YOLO Weight Load Error
+
+`yolo11x-pose.pt` 파일과  
+`cctv_detector_node`의 `MODEL_PATH` 설정을 확인합니다.
+
+---
+
+### Passenger UI가 print-only mode로 실행됨
+
+ROS2 환경을 먼저 Source합니다.
+
+```bash
+source /opt/ros/humble/setup.bash
+source ~/aura_ws/install/setup.bash
+```
+
+---
+
+### Admin UI에서 CCTV가 보이지 않음
+
+다음을 확인합니다.
+
+```text
+cctv_detector_node 실행 여부
+
+AURA_ADMIN_CCTV_TOPIC
+        ↕
+
+실제 CCTV Topic
+```
+
+---
+
+### NumPy Compatibility Error
+
+프로젝트 환경에서는 다음 버전을 사용합니다.
+
+```text
+numpy < 2.0
+```
+
+---
+
+# 📚 Documentation
+
+세부 ROS2 구조와 인터페이스는 다음 문서를 참고하세요.
+
+- [`docs/architecture.md`](docs/architecture.md)
+- [`docs/topics.md`](docs/topics.md)
+
+---
+
+# 🔗 Credits
+
+- UniDepth
+- Ultralytics YOLO11
+- ROS2 Humble
+- TurtleBot4 / Nav2
+
+---
+
+<div align="center">
+
+### ✈️ AURA
+
+**Collaborative AMR Service for Smart Airport**
+
+`Perception` · `Navigation` · `Fleet Management` · `Human-Robot Interaction`
+
+</div>
