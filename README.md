@@ -23,8 +23,7 @@ ROS2 기반 협동 AMR 서비스 시스템
 
 <br>
 
-<!-- GIF를 추가한 뒤 아래 주석을 해제하세요. -->
-<!-- <img src="./assets/aura_demo.gif" width="850"> -->
+<img src="./assets/aura_demo.gif" width="850">
 
 ### 🎬 [전체 시연 영상 보기](./assets/aura_demo.mp4)
 
@@ -153,8 +152,6 @@ Route Planning
 
 </div>
 
-GitHub README에서 바로 움직이는 시연 화면을 표시하려면  
-`assets/aura_demo.gif`를 추가한 뒤 README 상단의 GIF 태그 주석을 해제합니다.
 
 ```html
 <p align="center">
