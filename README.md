@@ -146,19 +146,13 @@ Route Planning
 
 최종 프로젝트 동작 영상입니다.
 
-<div align="center">
-
-### ▶️ [AURA Final Demo](./assets/aura_demo.mp4)
-
-</div>
-
-
-```html
 <p align="center">
   <img src="./assets/aura_demo.gif" width="850">
 </p>
-```
 
+<p align="center">
+  <a href="./assets/aura_demo.mp4">▶️ 전체 시연 영상 보기</a>
+</p>
 ---
 
 # 🏗️ System Architecture
